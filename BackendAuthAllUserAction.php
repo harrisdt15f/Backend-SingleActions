@@ -9,6 +9,7 @@ use Illuminate\Support\Arr;
 class BackendAuthAllUserAction
 {
     /**
+     *
      * 获取所有当前平台的商户管理员用户
      * @param  BackEndApiMainController  $contll
      * @return JsonResponse
