@@ -92,6 +92,8 @@ class PartnerAdminGroupEditAction
                         BackendAdminRechargePermitGroup::where('group_id', $datas->id)->delete();
                     }
                 }
+                //更新管理员组菜单缓存
+                $this->updateGroupMenu($datas);
                 DB::commit();
                 return $contll->msgOut(true, $datas->toArray());
             } catch (Exception $e) {
@@ -103,5 +105,13 @@ class PartnerAdminGroupEditAction
         } else {
             return $contll->msgOut(false, [], '100200');
         }
+    }
+
+    //更新管理员组菜单缓存
+    public function updateGroupMenu($accessGroupEloq): void
+    {
+        $role = json_decode($accessGroupEloq->role); //[1,2,3,4,5]
+        $backendSystemMenuEloq = new BackendSystemMenu();
+        $backendSystemMenuEloq->createMenuDatas($accessGroupEloq->id, $role);
     }
 }
