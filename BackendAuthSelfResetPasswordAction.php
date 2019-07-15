@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-26 18:06:25
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-26 18:11:23
- */
 namespace App\Http\SingleActions\Backend;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
