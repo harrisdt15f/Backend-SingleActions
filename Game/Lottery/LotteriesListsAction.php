@@ -33,10 +33,7 @@ class LotteriesListsAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $lotteries = $this->model::where([
-            ['series_id', '=', $inputDatas['series_id']],
-            ['status', '=', 1],
-        ])->with([
+        $lotteries = $this->model::where('series_id', '=', $inputDatas['series_id'])->with([
             'issueRule' => function ($query) {
                 $query->select('id', 'lottery_id', 'lottery_name', 'begin_time', 'end_time', 'issue_seconds',
                     'first_time', 'adjust_time', 'encode_time', 'issue_count', 'status', 'created_at', 'updated_at');
