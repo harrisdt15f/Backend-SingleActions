@@ -40,11 +40,9 @@ class ConfiguresGenerateIssueTimeAction
             if ($pastDataEloq !== null) {
                 $pastDataEloq->value = $inputDatas['value'];
                 $pastDataEloq->save();
-                if (Cache::has('generateIssueTime')) {
-                    Cache::forget('generateIssueTime');
-                }
+                Cache::forever('generateIssueTime', $pastDataEloq->value);
             } else {
-                $bool = $this->createIssueConfigure($inputDatas['value']);
+                $bool = $this->createIssueConfigure($contll, $inputDatas['value']);
                 if ($bool === false) {
                     return $contll->msgOut(false, [], '100702');
                 }
@@ -59,10 +57,11 @@ class ConfiguresGenerateIssueTimeAction
 
     /**
      * 创建生成奖期时间的配置
+     * @param  $contll
      * @param  date $time
      * @return bool
      */
-    public function createIssueConfigure($time): bool
+    public function createIssueConfigure($contll, $time): bool
     {
         DB::beginTransaction();
         try {
@@ -97,6 +96,7 @@ class ConfiguresGenerateIssueTimeAction
             $issueTimeEloq = new $this->model();
             $issueTimeEloq->fill($data);
             $issueTimeEloq->save();
+            Cache::forever('generateIssueTime', $issueTimeEloq->value);
             DB::commit();
             return true;
         } catch (Exception $e) {
