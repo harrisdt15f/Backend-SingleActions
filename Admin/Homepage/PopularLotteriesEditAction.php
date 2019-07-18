@@ -35,11 +35,6 @@ class PopularLotteriesEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        //检查该热门类型是否存在重复彩票
-        $checkData = $this->model::where('lotteries_id', $inputDatas['lotteries_id'])->where('id', '!=', $inputDatas['id'])->first();
-        if ($checkData === true) {
-            return $contll->msgOut(false, [], '102000');
-        }
         $pastDataEloq = $this->model::find($inputDatas['id']);
         //修改了图片的操作
         if (isset($inputDatas['pic'])) {
@@ -53,6 +48,7 @@ class PopularLotteriesEditAction
             $pastDataEloq->pic_path = '/' . $pic['path'];
         }
         try {
+            $pastDataEloq->lotteries_sign = $inputDatas['lotteries_sign'];
             $pastDataEloq->lotteries_id = $inputDatas['lotteries_id'];
             $pastDataEloq->save();
             if (isset($pastPic)) {
