@@ -39,8 +39,9 @@ class PopularLotteriesDetailAction
         foreach ($lotterieEloqs as $lotterie) {
             $data = [
                 'id' => $lotterie->id,
-                'pic_path' => $lotterie->pic_path,
+                'lotteries_id' => $lotterie->lotteries_id,
                 'cn_name' => $lotterie->lotteries->cn_name,
+                'pic_path' => $lotterie->pic_path,
                 'sort' => $lotterie->sort,
             ];
             $datas[] = $data;
