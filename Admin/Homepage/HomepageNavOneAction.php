@@ -32,7 +32,7 @@ class HomepageNavOneAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $frontendModelEloq = new $this->model;
-        $navEloq = $frontendModelEloq->getModel('nav.one');
+        $navEloq = $frontendModelEloq->getModelEloq('nav.one');
         $datas = $this->model::select('id', 'label', 'en_name', 'value', 'show_num', 'status')->where('pid', $navEloq->id)->get()->toArray();
         return $contll->msgOut(true, $datas);
     }
