@@ -54,8 +54,7 @@ class PopularLotteriesAddAction
             $popularLotteriesEloq = new $this->model;
             $popularLotteriesEloq->fill($addData);
             $popularLotteriesEloq->save();
-            //清除首页热门彩票缓存
-            $contll->deleteCache();
+            $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $imageObj->deletePic($pic['path']);
