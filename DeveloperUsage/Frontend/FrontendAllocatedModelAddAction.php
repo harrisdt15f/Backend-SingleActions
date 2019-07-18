@@ -40,9 +40,9 @@ class FrontendAllocatedModelAddAction
             }
         }
         try {
-            $modelEloq = new $this->model;
-            $modelEloq->fill($inputDatas);
-            $modelEloq->save();
+            $moduleEloq = new $this->model;
+            $moduleEloq->fill($inputDatas);
+            $moduleEloq->save();
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();
