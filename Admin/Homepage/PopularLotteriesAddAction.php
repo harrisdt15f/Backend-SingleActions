@@ -46,6 +46,7 @@ class PopularLotteriesAddAction
         }
         $addData = [
             'lotteries_id' => $inputDatas['lotteries_id'],
+            'lotteries_sign' => $inputDatas['lotteries_sign'],
             'sort' => $sort,
             'pic_path' => '/' . $pic['path'],
         ];
