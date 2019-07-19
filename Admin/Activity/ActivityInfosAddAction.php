@@ -38,36 +38,35 @@ class ActivityInfosAddAction
         //接收文件信息
         $imageObj = new ImageArrange();
         $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-        //进行上传
-        $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
-        if ($pic['success'] === false) {
-            return $contll->msgOut(false, [], '400', $pic['msg']);
-        }
-        //生成缩略图
-        $thumbnailPath = $imageObj->creatThumbnail($pic['path'], 100, 200);
-        //sort
-        $maxSort = $this->model::select('sort')->max('sort');
-        $sort = ++$maxSort;
         $addDatas = $inputDatas;
-        unset($addDatas['pic']);
+        unset($addDatas['pic'], $addDatas['preview_pic']);
+        //进行上传
+        $previewPic = $imageObj->uploadImg($inputDatas['preview_pic'], $depositPath);
+        if ($previewPic['success'] === false) {
+            return $contll->msgOut(false, [], '400', $previewPic['msg']);
+        }
+        $addDatas['preview_pic_path'] = '/' . $previewPic['path'];
+        if (isset($inputDatas['pic'])) {
+            $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
+            if ($pic['success'] === false) {
+                $imageObj->deletePic($previewPic['path']); //此次上传失败   删除前面上传的图片
+                return $contll->msgOut(false, [], '400', $pic['msg']);
+            }
+            $addDatas['pic_path'] = '/' . $pic['path'];
+        }
+        $maxSort = $this->model::select('sort')->max('sort');
+        $sort = ++$maxSort; //sort
         $addDatas['sort'] = $sort;
-        $addDatas['pic_path'] = '/' . $pic['path'];
-        $addDatas['thumbnail_path'] = '/' . $thumbnailPath;
         $addDatas['admin_id'] = $contll->partnerAdmin->id;
         $addDatas['admin_name'] = $contll->partnerAdmin->name;
-        try {
-            $configure = new $this->model();
-            $configure->fill($addDatas);
-            $configure->save();
-            //删除前台首页缓存
-            $contll->deleteCache();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $imageObj->deletePic($pic['path']);
-            $imageObj->deletePic($thumbnailPath);
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $this->msgOut(false, [], $sqlState, $msg);
+        $activityEloq = new $this->model();
+        $activityEloq->fill($addDatas);
+        $activityEloq->save();
+        if ($activityEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '400', $activityEloq->errors()->messages());
         }
+        //删除前台首页缓存
+        $contll->deleteCache();
+        return $contll->msgOut(true);
     }
 }
