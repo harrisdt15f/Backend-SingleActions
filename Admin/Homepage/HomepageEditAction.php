@@ -44,21 +44,16 @@ class HomepageEditAction
         if (isset($inputDatas['show_num'])) {
             $pastData->show_num = $inputDatas['show_num'];
         }
-        try {
-            $pastData->save();
-            //如果修改了展示状态  清楚首页展示model的缓存
-            if (isset($inputDatas['status'])) {
-                if (Cache::has('showModel')) {
-                    Cache::forget('showModel');
-                }
-            }
-            //删除前台首页缓存
-            $contll->deleteCache($pastData->key);
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $pastData->save();
+        if ($pastData->errors()->messages()) {
+            return $contll->msgOut(false, [], '400', $pastData->errors()->messages());
         }
+        //如果修改了展示状态  更新首页展示model的缓存
+        if (isset($inputDatas['status'])) {
+            $this->model::showModelCache();
+        }
+        //删除前台首页缓存
+        $contll->deleteCache($pastData->key);
+        return $contll->msgOut(true);
     }
 }
