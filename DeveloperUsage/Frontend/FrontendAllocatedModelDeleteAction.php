@@ -36,10 +36,10 @@ class FrontendAllocatedModelDeleteAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $modelEloq = $this->model::find($inputDatas['id']);
+        $moduleEloq = $this->model::find($inputDatas['id']);
         //检查是否存在下级
         $deleteIds[] = $inputDatas['id'];
-        $childs = $modelEloq->childs->pluck('id')->toArray();
+        $childs = $moduleEloq->childs->pluck('id')->toArray();
         if ($childs !== null) {
             $deleteIds = array_merge($deleteIds, $childs);
             $grandson = $this->model::whereIn('pid', $childs)->pluck('id')->toArray();

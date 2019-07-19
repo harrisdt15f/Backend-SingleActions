@@ -32,7 +32,9 @@ class ActivityInfosDetailAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $searchAbleFields = ['title', 'type', 'status', 'admin_name', 'is_time_interval'];
-        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields);
+        $orderFields = 'sort';
+        $orderFlow = 'asc';
+        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
         return $contll->msgOut(true, $datas);
     }
 

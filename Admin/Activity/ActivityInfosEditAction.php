@@ -42,37 +42,40 @@ class ActivityInfosEditAction
         $pastDataEloq = $this->model::find($inputDatas['id']);
         $editData = $inputDatas;
         //如果修改了图片 上传新图片
-        if (isset($inputDatas['pic'])) {
-            unset($editData['pic']);
-            $pastPic = $pastDataEloq->pic_path;
-            $pastThumbnail = $pastDataEloq->thumbnail_path;
-            //接收文件信息
+        if (isset($inputDatas['pic']) || isset($inputDatas['preview_pic'])) {
             $imageObj = new ImageArrange();
             $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-            //进行上传
-            $picdata = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
-            if ($picdata['success'] === false) {
-                return $this->msgOut(false, [], '400', $picdata['msg']);
+            if (isset($inputDatas['pic'])) {
+                unset($editData['pic']);
+                $pastPic = $pastDataEloq->pic_path;
+                $picdata = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
+                if ($picdata['success'] === false) {
+                    return $this->msgOut(false, [], '400', $picdata['msg']);
+                }
+                $pastDataEloq->pic_path = '/' . $picdata['path'];
             }
-            $pastDataEloq->pic_path = '/' . $picdata['path'];
-            //生成缩略图
-            $pastDataEloq->thumbnail_path = '/' . $imageObj->creatThumbnail($picdata['path'], 100, 200);
+            if (isset($inputDatas['preview_pic'])) {
+                unset($editData['preview_pic']);
+                $previewpreviewPic = $pastDataEloq->preview_pic_path;
+                $previewPic = $imageObj->uploadImg($inputDatas['preview_pic'], $depositPath);
+                if ($previewPic['success'] === false) {
+                    return $this->msgOut(false, [], '400', $previewPic['msg']);
+                }
+                $pastDataEloq->preview_pic_path = '/' . $previewPic['path'];
+            }
         }
         $contll->editAssignment($pastDataEloq, $editData);
-        try {
-            $pastDataEloq->save();
-            if (isset($inputDatas['pic'])) {
-                //删除原图片
-                $imageObj->deletePic(substr($pastPic, 1));
-                $imageObj->deletePic(substr($pastThumbnail, 1));
-            }
-            //删除前台首页缓存
-            $contll->deleteCache();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $pastDataEloq->save();
+        if ($pastDataEloq->errors()->messages()) {
+            return $this->msgOut(false, [], '400', $pastDataEloq->errors()->messages());
         }
+        if (isset($inputDatas['pic'])) {
+            $imageObj->deletePic(substr($pastPic, 1));
+        }
+        if (isset($inputDatas['pic'])) {
+            $imageObj->deletePic(substr($previewpreviewPic, 1));
+        }
+        $contll->deleteCache(); //删除前台首页缓存
+        return $contll->msgOut(true);
     }
 }

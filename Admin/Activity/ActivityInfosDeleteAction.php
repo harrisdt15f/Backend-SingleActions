@@ -45,7 +45,7 @@ class ActivityInfosDeleteAction
             //删除图片
             $imageObj = new ImageArrange();
             $imageObj->deletePic(substr($pastDataEloq->pic_path, 1));
-            $imageObj->deletePic(substr($pastDataEloq->thumbnail_path, 1));
+            $imageObj->deletePic(substr($pastDataEloq->preview_pic_path, 1));
             //删除前台首页缓存
             $contll->deleteCache();
             return $contll->msgOut(true);

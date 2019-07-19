@@ -31,8 +31,8 @@ class HomepagePageModelAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $frontendModelEloq = new $this->model;
-        $pageEloq = $frontendModelEloq->getModel('page.model');
+        $frontendModuleEloq = new $this->model;
+        $pageEloq = $frontendModuleEloq->getModuleEloq('page.model');
         $datas = $this->model::select('id', 'label', 'en_name', 'value', 'show_num', 'status')->where('pid', $pageEloq->id)->orWhere('en_name', 'banner')->get()->toArray();
         return $contll->msgOut(true, $datas);
     }

@@ -49,8 +49,7 @@ class PopularLotteriesSortAction
             }
             $stationaryData->save();
             DB::commit();
-            //清除首页热门彩票缓存
-            $contll->deleteCache();
+            $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();

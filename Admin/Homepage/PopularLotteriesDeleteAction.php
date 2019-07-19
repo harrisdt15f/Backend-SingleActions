@@ -46,8 +46,7 @@ class PopularLotteriesDeleteAction
             //删除图片
             $imageObj = new ImageArrange();
             $imageObj->deletePic(substr($pastData->pic_path, 1));
-            //清除首页热门彩票缓存
-            $contll->deleteCache();
+            $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
