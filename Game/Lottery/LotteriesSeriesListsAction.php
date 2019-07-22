@@ -9,20 +9,19 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Models\Game\Lottery\LotteryList;
+use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Config;
 
 class LotteriesSeriesListsAction
 {
     protected $model;
 
     /**
-     * @param  LotteryList  $lotteryList
+     * @param  LotterySerie  $lotterySerie
      */
-    public function __construct(LotteryList $lotteryList)
+    public function __construct(LotterySerie $lotterySerie)
     {
-        $this->model = $lotteryList;
+        $this->model = $lotterySerie;
     }
 
     /**
@@ -32,7 +31,7 @@ class LotteriesSeriesListsAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $seriesData = Config::get('game.main.series');
+        $seriesData = $this->model::select('series_name', 'title', 'status', 'encode_splitter')->get();
         return $contll->msgOut(true, $seriesData);
     }
 }
