@@ -9,8 +9,7 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Models\Admin\Notice\FrontendMessageNotice;
-use Exception;
+use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Illuminate\Http\JsonResponse;
 
 class NoticeEditAction
@@ -18,36 +17,27 @@ class NoticeEditAction
     protected $model;
 
     /**
-     * @param  FrontendMessageNotice  $frontendMessageNotice
+     * @param  FrontendMessageNoticesContent  $frontendMessageNoticesContent
      */
-    public function __construct(FrontendMessageNotice $frontendMessageNotice)
+    public function __construct(FrontendMessageNoticesContent $frontendMessageNoticesContent)
     {
-        $this->model = $frontendMessageNotice;
+        $this->model = $frontendMessageNoticesContent;
     }
 
     /**
-     * 编辑公告
+     * 编辑 公告|站内信
      * @param  BackEndApiMainController  $contll
      * @param  $inputDatas
      * @return JsonResponse
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $checkTitle = $this->model::where('title', $inputDatas['title'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($checkTitle === true) {
-            return $contll->msgOut(false, [], '102100');
+        $pastEloq = $this->model::find($inputDatas['id']);
+        $contll->editAssignment($pastEloq, $inputDatas);
+        $pastEloq->save();
+        if ($pastEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '400', $pastEloq->errors()->messages());
         }
-        try {
-            $pastEloq = $this->model::find($inputDatas['id']);
-            $contll->editAssignment($pastEloq, $inputDatas);
-            $pastEloq->save();
-            //删除前台首页缓存
-            $contll->deleteCache();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
-        }
+        return $contll->msgOut(true);
     }
 }

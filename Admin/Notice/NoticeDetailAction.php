@@ -9,7 +9,7 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Models\Admin\Notice\FrontendMessageNotice;
+use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Illuminate\Http\JsonResponse;
 
 class NoticeDetailAction
@@ -17,11 +17,11 @@ class NoticeDetailAction
     protected $model;
 
     /**
-     * @param  FrontendMessageNotice  $frontendMessageNotice
+     * @param  FrontendMessageNoticesContent  $frontendMessageNoticesContent
      */
-    public function __construct(FrontendMessageNotice $frontendMessageNotice)
+    public function __construct(FrontendMessageNoticesContent $frontendMessageNoticesContent)
     {
-        $this->model = $frontendMessageNotice;
+        $this->model = $frontendMessageNoticesContent;
     }
 
     /**
@@ -31,11 +31,10 @@ class NoticeDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $noticeDatas = $this->model::select('id', 'type', 'title', 'content', 'start_time', 'end_time', 'sort', 'status', 'admin_id')->with('admin')->orderBy('sort', 'asc')->get()->toArray();
-        foreach ($noticeDatas as $key => $data) {
-            $noticeDatas[$key]['admin_name'] = $data['admin']['name'];
-            unset($noticeDatas[$key]['admin_id'], $noticeDatas[$key]['admin']);
-        }
-        return $contll->msgOut(true, $noticeDatas);
+        $searchAbleFields = ['type'];
+        $orderFields = 'id';
+        $orderFlow = 'desc';
+        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
+        return $contll->msgOut(true, $datas);
     }
 }
