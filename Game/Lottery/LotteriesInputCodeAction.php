@@ -25,9 +25,8 @@ class LotteriesInputCodeAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $issueEloq = LotteryIssue::where([
-            ['issue', '=', $inputDatas['issue']],
+            ['issue', $inputDatas['issue']],
             ['lottery_id', $inputDatas['lottery_id']],
-            ['end_time', '<=', now()->timestamp],
         ])->first();
         if ($issueEloq === null) {
             return $contll->msgOut(false, [], '101703');
