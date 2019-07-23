@@ -33,14 +33,6 @@ class FrontendAllocatedModelEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $isExistLabel = $this->model::where('label', $inputDatas['label'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($isExistLabel === true) {
-            return $contll->msgOut(false, [], '101600');
-        }
-        $isExistName = $this->model::where('en_name', $inputDatas['en_name'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($isExistName === true) {
-            return $contll->msgOut(false, [], '101601');
-        }
         $pastDataEloq = $this->model::find($inputDatas['id']);
         try {
             $pastDataEloq->label = $inputDatas['label'];

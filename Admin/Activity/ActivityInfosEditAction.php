@@ -35,10 +35,6 @@ class ActivityInfosEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $issetTitle = $this->model::where('title', $inputDatas['title'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($issetTitle === true) {
-            return $contll->msgOut(false, [], '100300');
-        }
         $pastDataEloq = $this->model::find($inputDatas['id']);
         $editData = $inputDatas;
         //如果修改了图片 上传新图片

@@ -33,10 +33,6 @@ class ConfiguresEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $checkSign = $this->model::where('sign', $inputDatas['sign'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($checkSign === true) {
-            return $contll->msgOut(false, [], '100700');
-        }
         $pastDataEloq = $this->model::find($inputDatas['id']);
         $contll->editAssignment($pastDataEloq, $inputDatas);
         try {

@@ -35,10 +35,6 @@ class HomepageBannerEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $checkTitle = $this->model::where('title', $inputDatas['title'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($checkTitle === true) {
-            return $contll->msgOut(false, [], '101800');
-        }
         $pastData = $this->model::find($inputDatas['id']);
         $editData = $inputDatas;
         unset($editData['pic']);

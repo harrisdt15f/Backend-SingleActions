@@ -33,10 +33,6 @@ class AccountChangeTypeEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $isExistSign = $this->model::where('sign', $inputDatas['sign'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($isExistSign === true) {
-            return $contll->msgout(false, [], '101200');
-        }
         $editData = $inputDatas;
         $param = implode(',', $inputDatas['param']);
         $editData['param'] = $param;

@@ -34,11 +34,6 @@ class PopularMethodsEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        //彩种是否已存在
-        $isExistLottery = $this->model::where('lotteries_id', $inputDatas['lotteries_id'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($isExistLottery === true) {
-            return $contll->msgOut(false, [], '100600');
-        }
         try {
             $pastDataEloq = $this->model::find($inputDatas['id']);
             $contll->editAssignment($pastDataEloq, $inputDatas);

@@ -33,10 +33,6 @@ class ArticlesEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $issetTitle = $this->model::where('title', $inputDatas['title'])->where('id', '!=', $inputDatas['id'])->exists();
-        if ($issetTitle === true) {
-            return $contll->msgOut(false, [], '100500');
-        }
         try {
             $pastEloq = $this->model::find($inputDatas['id']);
             //插入 backend_admin_audit_flow_lists 审核表
