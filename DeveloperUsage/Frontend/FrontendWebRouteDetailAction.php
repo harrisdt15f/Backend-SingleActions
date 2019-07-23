@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-24 15:08:03
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-24 15:10:08
- */
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
@@ -31,7 +25,7 @@ class FrontendWebRouteDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $datas = $this->model::select('id', 'route_name', 'frontend_model_id', 'title', 'description', 'is_open')->get()->toArray();
+        $datas = $this->model::get();
         return $contll->msgOut(true, $datas);
     }
 }
