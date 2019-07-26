@@ -19,20 +19,6 @@ class LotteriesEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $isExistCnName = LotteryList::where([
-            ['id', '!=', $inputDatas['lottery']['id']],
-            ['cn_name', $inputDatas['lottery']['cn_name']],
-        ])->exists();
-        if ($isExistCnName === true) {
-            return $contll->msgOut(false, [], '101705');
-        }
-        $isExistEnName = LotteryList::where([
-            ['id', '!=', $inputDatas['lottery']['id']],
-            ['en_name', $inputDatas['lottery']['en_name']],
-        ])->exists();
-        if ($isExistEnName === true) {
-            return $contll->msgOut(false, [], '101706');
-        }
         DB::beginTransaction();
         $lotteryEloq = LotteryList::find($inputDatas['lottery']['id']);
         $issueRuleEloq = $lotteryEloq->issueRule;

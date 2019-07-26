@@ -3,6 +3,7 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Models\Game\Lottery\CronJob;
 use App\Models\Game\Lottery\LotteryIssueRule;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
@@ -32,6 +33,11 @@ class LotteriesAddAction
         if ($insertStatus['success'] === false) {
             DB::rollback();
             return $contll->msgOut(false, [], '400', $insertStatus['message']);
+        }
+        $createStatus = CronJob::createCronJob($lotteryEloq->id, $lotteryEloq->en_name, $inputDatas['cron']);
+        if ($createStatus['success'] === false) {
+            DB::rollback();
+            return $contll->msgOut(false, [], '400', $createStatus['message']);
         }
         $issueRuleELoq = new LotteryIssueRule();
         $issueRuleELoq->fill($inputDatas['issue_rule']);
