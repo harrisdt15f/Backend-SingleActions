@@ -15,7 +15,7 @@ class LotteryNoticeDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $data = FrontendLotteryNoticeList::select('id', 'lotteries_id', 'icon_path', 'status', 'sort')->orderBy('sort', 'asc')->get()->toArray();
+        $data = FrontendLotteryNoticeList::select('id', 'lotteries_id', 'status', 'sort')->orderBy('sort', 'asc')->get()->toArray();
         return $contll->msgOut(true, $data);
     }
 }
