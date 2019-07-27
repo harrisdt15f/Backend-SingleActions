@@ -6,36 +6,31 @@ use App\Http\Controllers\backendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Game\Lottery\LotteryList;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\DB;
 
-class LotteriesDeleteAction
+class LotteriesEditIconAction
 {
     /**
-     * 删除彩种
+     * 编辑彩种icon
      * @param   BackEndApiMainController  $contll
      * @param   $inputDatas
      * @return  JsonResponse
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        DB::beginTransaction();
+        $imageObj = new ImageArrange();
+        $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $icon = $imageObj->uploadImg($inputDatas['icon'], $depositPath);
+        if ($icon['success'] === false) {
+            return $contll->msgOut(false, [], '400', $icon['msg']);
+        }
         $lotteryEloq = LotteryList::find($inputDatas['id']);
         $pastIcon = $lotteryEloq->icon_path;
-        $issueRuleEloq = $lotteryEloq->issueRule;
-        $lotteryEloq->delete();
+        $lotteryEloq->icon_path = '/' . $icon['path'];
+        $lotteryEloq->save();
         if ($lotteryEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
         }
-        $issueRuleEloq->delete();
-        if ($issueRuleEloq->errors()->messages()) {
-            DB::rollback();
-            return $contll->msgOut(false, [], '400', $issueRuleEloq->errors()->messages());
-        }
-        DB::commit();
-        $imageObj = new ImageArrange();
         $imageObj->deletePic(substr($pastIcon, 1));
-        $lotteryEloq->lotteryInfoCache(); //更新首页lotteryInfo缓存
         return $contll->msgOut(true);
-
     }
 }

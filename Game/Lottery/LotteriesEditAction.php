@@ -3,9 +3,7 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Models\Game\Lottery\LotteryIssueRule;
 use App\Models\Game\Lottery\LotteryList;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
