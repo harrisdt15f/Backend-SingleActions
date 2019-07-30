@@ -3,6 +3,7 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\Game\Lottery\LotteryList;
 use Illuminate\Http\JsonResponse;
@@ -17,20 +18,15 @@ class LotteriesEditIconAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $imageObj = new ImageArrange();
-        $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-        $icon = $imageObj->uploadImg($inputDatas['icon'], $depositPath);
-        if ($icon['success'] === false) {
-            return $contll->msgOut(false, [], '400', $icon['msg']);
-        }
         $lotteryEloq = LotteryList::find($inputDatas['id']);
-        $pastIcon = $lotteryEloq->icon_path;
-        $lotteryEloq->icon_path = '/' . $icon['path'];
+        $pastPic = $lotteryEloq->icon_path;
+        $lotteryEloq->icon_path = $inputDatas['icon_path'];
         $lotteryEloq->save();
         if ($lotteryEloq->errors()->messages()) {
-            return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
+            $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
         }
-        $imageObj->deletePic(substr($pastIcon, 1));
+        ImageArrange::deletePic($pastPic);
+        CacheRelated::deleteCachePic($inputDatas['icon_name']); //从定时清理的缓存图片中移除上传成功的图片
         return $contll->msgOut(true);
     }
 }
