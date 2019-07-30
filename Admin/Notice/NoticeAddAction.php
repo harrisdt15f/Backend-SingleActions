@@ -9,6 +9,7 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Lib\Common\CacheRelated;
 use App\Models\Admin\Notice\FrontendMessageNotice;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use App\Models\User\FrontendUser;
@@ -38,6 +39,7 @@ class NoticeAddAction
         $noticesContentData = $inputDatas;
         $noticesContentData['operate_admin_id'] = $contll->partnerAdmin->id;
         $noticesContentData['operate_admin_name'] = $contll->partnerAdmin->name;
+        unset($noticesContentData['pic_name']);
         DB::beginTransaction();
         $noticesContentELoq = new $this->model;
         $noticesContentELoq->fill($noticesContentData);
@@ -62,6 +64,9 @@ class NoticeAddAction
             }
         }
         DB::commit();
+        if (isset($inputDatas['pic_name'])) {
+            CacheRelated::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
+        }
         return $contll->msgOut(true);
     }
 }

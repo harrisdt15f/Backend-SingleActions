@@ -9,6 +9,7 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Notice\FrontendMessageNotice;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Exception;
@@ -37,9 +38,16 @@ class NoticeDeleteAction
     {
         DB::beginTransaction();
         try {
-            $deletedEloq = $this->model::find($inputDatas['id'])->delete();
+            $noticesContentEloq = $this->model::find($inputDatas['id']);
+            $picStr = $noticesContentEloq->pic_path;
+            $noticesContentEloq->delete();
             FrontendMessageNotice::where('notices_content_id', $inputDatas['id'])->delete();
             DB::commit();
+            if ($picStr !== null) {
+                $picArr = explode('|', $picStr);
+                $imageObj = new ImageArrange();
+                $imageObj->deleteImgs($picArr);
+            }
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();
