@@ -23,13 +23,11 @@ class SystemUploadPiclAction
         $file = $inputDatas['pic'];
         $folderName = $inputDatas['folder_name'];
         $depositPath = $imageObj->depositPath($folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-        //进行上传
         $pic = $imageObj->uploadImg($file, $depositPath);
         if ($pic['success'] === false) {
             return $contll->msgOut(false, [], '400', $pic['msg']);
         }
-        //设置图片过期时间6小时
-        $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
+        $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp; //设置图片过期时间6小时
         $hourToStore = 24 * 2;
         $expiresAt = Carbon::now()->addHours($hourToStore);
         if (Cache::has('cache_pic')) {
