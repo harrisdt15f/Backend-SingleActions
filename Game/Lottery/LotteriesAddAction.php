@@ -29,21 +29,18 @@ class LotteriesAddAction
         $lotteryEloq->save();
         if ($lotteryEloq->errors()->messages()) {
             DB::rollback();
-            $imageObj->deletePic($icon['path']);
             return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
         }
         $methodELoq = new LotteryMethod();
         $insertStatus = $methodELoq->cloneLotteryMethods($lotteryEloq); //克隆彩种玩法
         if ($insertStatus['success'] === false) {
             DB::rollback();
-            $imageObj->deletePic($icon['path']);
             return $contll->msgOut(false, [], '400', $insertStatus['message']);
         }
         if ($inputDatas['lottery']['auto_open'] == 1) {
             $createData = CronJob::createCronJob($inputDatas['cron']); //自开彩种 自动开奖任务
             if ($createData['success'] === false) {
                 DB::rollback();
-                $imageObj->deletePic($icon['path']);
                 return $contll->msgOut(false, [], '400', $createData['message']);
             }
         }
@@ -52,7 +49,6 @@ class LotteriesAddAction
         $issueRuleELoq->save();
         if ($issueRuleELoq->errors()->messages()) {
             DB::rollback();
-            $imageObj->deletePic($icon['path']);
             return $contll->msgOut(false, [], '400', $issueRuleELoq->errors()->messages());
         }
         DB::commit();
