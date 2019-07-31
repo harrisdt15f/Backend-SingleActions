@@ -4,7 +4,7 @@ namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
 use App\Lib\Common\CacheRelated;
-use App\Models\Game\Lottery\CronJob;
+use App\Models\DeveloperUsage\TaskScheduling\CronJob;
 use App\Models\Game\Lottery\LotteryIssueRule;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
