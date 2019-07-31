@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-21 19:06:19
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-21 21:20:53
- */
 namespace App\Http\SingleActions\Backend\Admin\Log;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;

@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-20 15:05:42
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-21 21:12:48
- */
 namespace App\Http\SingleActions\Backend\Admin\Advertisement;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;

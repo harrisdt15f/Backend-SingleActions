@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-24 11:39:29
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-24 11:58:16
- */
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Backend\Menu;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;

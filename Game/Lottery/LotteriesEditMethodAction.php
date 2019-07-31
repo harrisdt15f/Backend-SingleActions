@@ -1,11 +1,5 @@
 <?php
 
-/**
- * @Author: LingPh
- * @Date:   2019-06-24 17:42:47
- * @Last Modified by:   LingPh
- * @Last Modified time: 2019-06-24 17:46:41
- */
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
