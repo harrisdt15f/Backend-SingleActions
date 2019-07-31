@@ -38,7 +38,7 @@ class LotteriesAddAction
             return $contll->msgOut(false, [], '400', $insertStatus['message']);
         }
         if ($inputDatas['lottery']['auto_open'] == 1) {
-            $createData = CronJob::createCronJob($inputDatas['cron']); //自开彩种 自动开奖任务
+            $createData = CronJob::insertCronJob($inputDatas['cron']); //自开彩种 自动开奖任务
             if ($createData['success'] === false) {
                 DB::rollback();
                 return $contll->msgOut(false, [], '400', $createData['message']);
