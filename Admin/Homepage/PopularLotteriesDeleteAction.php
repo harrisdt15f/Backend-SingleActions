@@ -3,7 +3,6 @@
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -30,16 +29,12 @@ class PopularLotteriesDeleteAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
-        $pastData = $pastDataEloq;
+        $sort = $pastDataEloq->sort;
         DB::beginTransaction();
         try {
             $pastDataEloq->delete();
-            //重新排序
-            $datas = $this->model::where('sort', '>', $pastData->sort)->decrement('sort');
+            $this->model::where('sort', '>', $sort)->decrement('sort');
             DB::commit();
-            //删除图片
-            $imageObj = new ImageArrange();
-            $imageObj->deletePic(substr($pastData->pic_path, 1));
             $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
