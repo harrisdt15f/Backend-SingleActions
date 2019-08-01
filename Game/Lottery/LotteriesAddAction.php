@@ -23,6 +23,7 @@ class LotteriesAddAction
     {
         DB::beginTransaction();
         $lotteryDatas = $inputDatas['lottery'];
+        $lotteryDatas['icon_path'] = '/' . $lotteryDatas['icon_path'];
         unset($lotteryDatas['icon_name']);
         $lotteryEloq = new LotteryList();
         $lotteryEloq->fill($lotteryDatas);
