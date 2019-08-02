@@ -40,21 +40,12 @@ class NoticeAddAction
         $noticesContentELoq->save();
         if ($noticesContentELoq->errors()->messages()) {
             DB::rollback();
-            return $contll->msgOut(false, [], '400', $noticesContentELoq->errors()->messages());
+            return $contll->msgOut(false, [], '', $noticesContentELoq->errors()->messages());
         }
-        $userIds = FrontendUser::getAllUserIds(); //所有用户id Eloq
-        foreach ($userIds as $user) {
-            $messageNoticeData = [
-                'receive_user_id' => $user->id,
-                'notices_content_id' => $noticesContentELoq->id,
-                'status' => FrontendMessageNotice::UN_READ,
-            ];
-            $messageNoticeEloq = new FrontendMessageNotice();
-            $messageNoticeEloq->fill($messageNoticeData);
-            $messageNoticeEloq->save();
-            if ($messageNoticeEloq->errors()->messages()) {
-                DB::rollback();
-                return $contll->msgOut(false, [], '400', $messageNoticeEloq->errors()->messages());
+        if ($inputDatas['type'] == $this->model::TYPE_MESSAGE) {
+            $insertUserNotice = $this->insertUserNotice($noticesContentELoq->id);
+            if ($insertUserNotice !== true) {
+                return $contll->msgOut(false, [], '', $insertUserNotice);
             }
         }
         DB::commit();
@@ -62,5 +53,29 @@ class NoticeAddAction
             CacheRelated::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
         }
         return $contll->msgOut(true);
+    }
+
+    /**
+     * 给用户发送站内信
+     * @param  int $noticesContentId
+     */
+    public function insertUserNotice($noticesContentId)
+    {
+        $userIds = FrontendUser::getAllUserIds(); //所有用户id Eloq
+        foreach ($userIds as $user) {
+            $messageNoticeData = [
+                'receive_user_id' => $user->id,
+                'notices_content_id' => $noticesContentId,
+                'status' => FrontendMessageNotice::STATUS_UN_READ,
+            ];
+            $messageNoticeEloq = new FrontendMessageNotice();
+            $messageNoticeEloq->fill($messageNoticeData);
+            $messageNoticeEloq->save();
+            if ($messageNoticeEloq->errors()->messages()) {
+                DB::rollback();
+                return $messageNoticeEloq->errors()->messages();
+            }
+        }
+        return true;
     }
 }
