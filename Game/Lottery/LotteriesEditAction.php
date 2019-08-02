@@ -5,6 +5,7 @@ namespace App\Http\SingleActions\Backend\Game\Lottery;
 use App\Http\Controllers\backendApi\BackEndApiMainController;
 use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
+use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
 use App\Models\Game\Lottery\LotteryList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -48,6 +49,7 @@ class LotteriesEditAction
             ImageArrange::deletePic(substr($pastIcon, 1));
         }
         $lotteryEloq->lotteryInfoCache(); //更新首页lotteryInfo缓存
+        FrontendLotteryRedirectBetList::updatePopularLotteriesCache(); //更新首页热门彩票缓存
         return $contll->msgOut(true);
     }
 }
