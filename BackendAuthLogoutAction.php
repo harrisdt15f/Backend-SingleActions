@@ -17,7 +17,7 @@ class BackendAuthLogoutAction
      */
     public function execute(BackEndApiMainController $contll, $request): JsonResponse
     {
-        $throtleKey = Str::lower($contll->partnerAdmin->name . '|' . $request->ip());
+        $throtleKey = Str::lower($contll->partnerAdmin->email . '|' . $request->ip());
         $request->session()->invalidate();
         $this->limiter()->clear($throtleKey);
         $contll->currentAuth->logout();
