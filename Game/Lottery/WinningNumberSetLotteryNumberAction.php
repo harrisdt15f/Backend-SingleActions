@@ -8,15 +8,16 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Http\JsonResponse;
 
 class WinningNumberSetLotteryNumberAction
 {
     public function execute(BackEndApiMainController $contll, $inputDatas = [], $headers = []): JsonResponse
     {
-        Log::info(json_encode($inputDatas));
-        Log::info(json_encode($headers));
+        Log::channel('open-center')->info('Inputs are '.json_encode($inputDatas,JSON_PRETTY_PRINT));
+        Log::channel('open-center')->info('Headers are '.json_encode($headers,JSON_PRETTY_PRINT));
         return $contll->msgOut(true);
     }
 }
