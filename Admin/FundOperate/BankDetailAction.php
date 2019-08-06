@@ -26,7 +26,9 @@ class BankDetailAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $searchAbleFields = ['title', 'code', 'pay_type', 'status'];
-        $banksDatas = $contll->generateSearchQuery($this->model, $searchAbleFields);
+        $orderFields = 'id';
+        $orderFlow = 'asc';
+        $banksDatas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
         return $contll->msgOut(true, $banksDatas);
     }
 }

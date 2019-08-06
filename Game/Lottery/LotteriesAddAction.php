@@ -46,12 +46,14 @@ class LotteriesAddAction
                 return $contll->msgOut(false, [], '400', $createData['message']);
             }
         }
-        $issueRuleELoq = new LotteryIssueRule();
-        $issueRuleELoq->fill($inputDatas['issue_rule']);
-        $issueRuleELoq->save();
-        if ($issueRuleELoq->errors()->messages()) {
-            DB::rollback();
-            return $contll->msgOut(false, [], '400', $issueRuleELoq->errors()->messages());
+        foreach ($inputDatas['issue_rule'] as $issueRuleData) {
+            $issueRuleELoq = new LotteryIssueRule();
+            $issueRuleELoq->fill($issueRuleData);
+            $issueRuleELoq->save();
+            if ($issueRuleELoq->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '400', $issueRuleELoq->errors()->messages());
+            }
         }
         DB::commit();
         CacheRelated::deleteCachePic($inputDatas['lottery']['icon_name']); //从定时清理的缓存图片中移除上传成功的图片

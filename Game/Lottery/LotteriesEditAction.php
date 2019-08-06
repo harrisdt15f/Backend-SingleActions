@@ -6,6 +6,7 @@ use App\Http\Controllers\backendApi\BackEndApiMainController;
 use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
+use App\Models\Game\Lottery\LotteryIssueRule;
 use App\Models\Game\Lottery\LotteryList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
@@ -29,17 +30,21 @@ class LotteriesEditAction
             $pastIcon = $lotteryEloq->icon_path;
             $lotteryData['icon_path'] = '/' . $lotteryData['icon_path'];
         }
-        $issueRuleEloq = $lotteryEloq->issueRule;
+        //编辑彩种
         $contll->editAssignment($lotteryEloq, $lotteryData);
         $lotteryEloq->save();
         if ($lotteryEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
         }
-        $contll->editAssignment($issueRuleEloq, $inputDatas['issue_rule']);
-        $issueRuleEloq->save();
-        if ($issueRuleEloq->errors()->messages()) {
-            DB::rollback();
-            return $contll->msgOut(false, [], '400', $issueRuleEloq->errors()->messages());
+        //编辑奖期规则
+        foreach ($inputDatas['issue_rule'] as $issueRuleData) {
+            $issueRuleEloq = LotteryIssueRule::find($issueRuleData['id']);
+            $contll->editAssignment($issueRuleEloq, $issueRuleData);
+            $issueRuleEloq->save();
+            if ($issueRuleEloq->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '400', $issueRuleEloq->errors()->messages());
+            }
         }
         DB::commit();
         if (isset($iconName)) {

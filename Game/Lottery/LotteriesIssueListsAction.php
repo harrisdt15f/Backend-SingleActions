@@ -3,7 +3,9 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Models\Game\Lottery\LotteryIssue;
 use App\Models\Game\Lottery\LotteryList;
+use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
@@ -39,20 +41,24 @@ class LotteriesIssueListsAction
             $contll->inputs['extra_where']['key'] = 'lottery_id';
             $contll->inputs['extra_where']['value'] = $tempLotteryId;
         }
-        if (!isset($contll->inputs['time_condtions'])) {
-            $timeToSubstract = 0; // 不存在时间段搜索时，默认返回现在还未结束的奖期
-            //选定彩种并选择了展示已过期的期数时  重新计算哪个时间之后的奖期
-            if (isset($contll->inputs['lottery_id'], $contll->inputs['previous_number'])) {
-                $lotteryEloq = LotteryList::where('en_name', $contll->inputs['lottery_id'])->first();
-                if ($lotteryEloq === null) {
-                    return $contll->msgOut(false, [], '101700');
+        $searchFieldArr = ['issue']; //存在指定搜索字段  不插入time_condtions条件
+        $isExistField = arr::has($contll->inputs, $searchFieldArr);
+        if ($isExistField === false) {
+            if (!isset($contll->inputs['time_condtions'])) {
+                $timeToSubstract = 0; // 不存在时间段搜索时，默认返回现在还未结束的奖期
+                //选定彩种并选择了展示已过期的期数时  重新计算哪个时间之后的奖期
+                if (isset($contll->inputs['lottery_id'], $contll->inputs['previous_number'])) {
+                    $lotteryEloq = LotteryList::where('en_name', $contll->inputs['lottery_id'])->first();
+                    if ($lotteryEloq === null) {
+                        return $contll->msgOut(false, [], '101700');
+                    }
+                    $issueSeconds = $lotteryEloq->issueRule->issue_seconds;
+                    $timeToSubstract = $issueSeconds * $contll->inputs['previous_number']; //一期的周期时间*需要查看过期的期数
                 }
-                $issueSeconds = $lotteryEloq->issueRule->issue_seconds;
-                $timeToSubstract = $issueSeconds * $contll->inputs['previous_number'];
+                $afewMinutes = Carbon::now()->subSeconds($timeToSubstract)->timestamp;
+                $timeCondtions = '[["end_time",">=",' . $afewMinutes . ']]';
+                $contll->inputs['time_condtions'] = $timeCondtions;
             }
-            $afewMinutes = Carbon::now()->subSeconds($timeToSubstract)->timestamp;
-            $timeCondtions = '[["end_time",">=",' . $afewMinutes . ']]';
-            $contll->inputs['time_condtions'] = $timeCondtions;
         }
         $eloqM = $contll->modelWithNameSpace($contll->lotteryIssueEloq);
         $searchAbleFields = ['lottery_id', 'issue'];
@@ -60,7 +66,26 @@ class LotteriesIssueListsAction
         $withTable = 'lottery';
         $orderFields = 'begin_time';
         $orderFlow = 'asc';
-        $data = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, null, $orderFields, $orderFlow);
-        return $contll->msgOut(true, $data);
+        $issueList = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, null, $orderFields, $orderFlow);
+        $this->insertCodeExample($issueList); //插入开奖号码例子
+        return $contll->msgOut(true, $issueList);
+    }
+
+    /**
+     * 插入开奖号码例子
+     * @param  $issues
+     * @return void
+     */
+    public function insertCodeExample($issues): void
+    {
+        $serieList = LotterySerie::getList();
+        foreach ($issues as $issueItem) {
+            $codeLength = $issueItem->lottery->code_length ?? null;
+            $validCode = $issueItem->lottery->valid_code ?? null;
+            $lotteryType = $issueItem->lottery->lottery_type ?? null;
+            $splitter = $serieList[$issueItem->lottery->series_id]['encode_splitter'] ?? null;
+            $codeExample = LotteryIssue::getAwardCodeExample($codeLength, $validCode, $lotteryType, $splitter);
+            $issueItem->code_example = $codeExample;
+        }
     }
 }

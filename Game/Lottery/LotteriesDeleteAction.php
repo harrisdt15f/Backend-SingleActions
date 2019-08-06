@@ -27,10 +27,12 @@ class LotteriesDeleteAction
         if ($lotteryEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
         }
-        $issueRuleEloq->delete();
-        if ($issueRuleEloq->errors()->messages()) {
-            DB::rollback();
-            return $contll->msgOut(false, [], '400', $issueRuleEloq->errors()->messages());
+        foreach ($issueRuleEloq as $issueRuleItem) {
+            $issueRuleItem->delete();
+            if ($issueRuleItem->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '400', $issueRuleItem->errors()->messages());
+            }
         }
         DB::commit();
         $imageObj = new ImageArrange();
