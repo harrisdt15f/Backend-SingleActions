@@ -23,9 +23,9 @@ class HomepageBannerDetailAction
      * @param  BackEndApiMainController  $contll
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(BackEndApiMainController $contll,$inputDatas): JsonResponse
     {
-        $data = $this->model::orderBy('sort', 'asc')->get()->toArray();
+        $data = $this->model::where('flag',$inputDatas['flag'])->orderBy('sort', 'asc')->get()->toArray();
         return $contll->msgOut(true, $data);
     }
 }
