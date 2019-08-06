@@ -57,7 +57,7 @@ class LotteriesMethodListsAction
                         $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['data'] = $methodGroup;
                         $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['child'] = [];
                         //#########################################################
-                        $methodRows = $mgItems->methodRows->where('lottery_id', $currentLotteryId);
+                        $methodRows = $mgItems->methodRows;
                         foreach ($methodRows as $mrItems) {
                             $currentMethodRow = $mrItems->method_row;
                             $methodRowBool = $mrItems->where('lottery_id', $currentLotteryId)->where('method_group', $curentMethodGroup)->where('method_row', $currentMethodRow)->where('status', 1)->exists();

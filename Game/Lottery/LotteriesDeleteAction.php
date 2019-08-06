@@ -23,6 +23,7 @@ class LotteriesDeleteAction
         $lotteryEloq = LotteryList::find($inputDatas['id']);
         $pastIcon = $lotteryEloq->icon_path;
         $issueRuleEloq = $lotteryEloq->issueRule;
+        $gameMethodsEloq = $lotteryEloq->gameMethods;
         $lotteryEloq->delete();
         if ($lotteryEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
@@ -32,6 +33,13 @@ class LotteriesDeleteAction
             if ($issueRuleItem->errors()->messages()) {
                 DB::rollback();
                 return $contll->msgOut(false, [], '400', $issueRuleItem->errors()->messages());
+            }
+        }
+        foreach ($gameMethodsEloq as $gameMethodItem) {
+            $gameMethodItem->delete();
+            if ($gameMethodItem->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '400', $gameMethodItem->errors()->messages());
             }
         }
         DB::commit();

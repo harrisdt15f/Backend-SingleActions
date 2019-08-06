@@ -45,18 +45,13 @@ class LotteriesIssueListsAction
         $isExistField = arr::has($contll->inputs, $searchFieldArr);
         if ($isExistField === false) {
             if (!isset($contll->inputs['time_condtions'])) {
-                $timeToSubstract = 0; // 不存在时间段搜索时，默认返回现在还未结束的奖期
-                //选定彩种并选择了展示已过期的期数时  重新计算哪个时间之后的奖期
+                $endTimeStamp = time(); // 不存在时间段搜索时，默认返回现在还未结束的奖期
+                //选定彩种并选择了展示已过期的期数时  获取结束时间>那一期的奖期
                 if (isset($contll->inputs['lottery_id'], $contll->inputs['previous_number'])) {
-                    $lotteryEloq = LotteryList::where('en_name', $contll->inputs['lottery_id'])->first();
-                    if ($lotteryEloq === null) {
-                        return $contll->msgOut(false, [], '101700');
-                    }
-                    $issueSeconds = $lotteryEloq->issueRule->issue_seconds;
-                    $timeToSubstract = $issueSeconds * $contll->inputs['previous_number']; //一期的周期时间*需要查看过期的期数
+                    $lotteryIssueEloq = LotteryIssue::getPastIssue($contll->inputs['lottery_id'], $contll->inputs['previous_number']);
+                    $endTimeStamp = $lotteryIssueEloq->end_time ?? time();
                 }
-                $afewMinutes = Carbon::now()->subSeconds($timeToSubstract)->timestamp;
-                $timeCondtions = '[["end_time",">=",' . $afewMinutes . ']]';
+                $timeCondtions = '[["end_time",">=",' . $endTimeStamp . ']]';
                 $contll->inputs['time_condtions'] = $timeCondtions;
             }
         }
