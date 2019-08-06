@@ -36,6 +36,7 @@ class ActivityInfosAddAction
         unset($addDatas['pic'], $addDatas['preview_pic']);
         //进行上传
         $previewPic = $imageObj->uploadImg($inputDatas['preview_pic'], $depositPath);
+
         if ($previewPic['success'] === false) {
             return $contll->msgOut(false, [], '400', $previewPic['msg']);
         }
@@ -53,6 +54,7 @@ class ActivityInfosAddAction
         $addDatas['sort'] = $sort;
         $addDatas['admin_id'] = $contll->partnerAdmin->id;
         $addDatas['admin_name'] = $contll->partnerAdmin->name;
+        $addDatas['type'] =$inputDatas['type'];
         $activityEloq = new $this->model();
         $activityEloq->fill($addDatas);
         $activityEloq->save();
