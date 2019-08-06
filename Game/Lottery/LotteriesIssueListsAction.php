@@ -79,7 +79,7 @@ class LotteriesIssueListsAction
             $validCode = $issueItem->lottery->valid_code ?? null;
             $lotteryType = $issueItem->lottery->lottery_type ?? null;
             $splitter = $serieList[$issueItem->lottery->series_id]['encode_splitter'] ?? null;
-            $codeExample = LotteryIssue::getAwardCodeExample($codeLength, $validCode, $lotteryType, $splitter);
+            $codeExample = LotteryIssue::getOpenNumber($codeLength, $validCode, $lotteryType, $splitter);
             $issueItem->code_example = $codeExample;
         }
     }
