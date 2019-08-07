@@ -26,7 +26,7 @@ class WinningNumberSetLotteryNumberAction
         $lotterySign = $inputDatas['lottery']; //推过来的彩种sign 需要匹配到平台的彩种sign
         $signList = Config::get('game.lottery.sign');
         $lotteryId = $signList[$lotterySign] ?? null; //匹配平台彩种sign
-        $closeLottery = ['gd115', 'sd115'];
+        $closeLottery = Config::get('game.lottery.close');
         if (in_array($lotteryId, $closeLottery)) {
             return $contll->msgOut(false);
         }
