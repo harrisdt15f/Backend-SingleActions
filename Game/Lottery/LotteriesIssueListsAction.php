@@ -51,7 +51,7 @@ class LotteriesIssueListsAction
                     $lotteryIssueEloq = LotteryIssue::getPastIssue($contll->inputs['lottery_id'], $contll->inputs['previous_number']);
                     $endTimeStamp = $lotteryIssueEloq->end_time ?? time();
                 }
-                $timeCondtions = '[["end_time",">=",' . $endTimeStamp . ']]';
+                $timeCondtions = '[["end_time",">",' . $endTimeStamp . ']]';
                 $contll->inputs['time_condtions'] = $timeCondtions;
             }
         }
