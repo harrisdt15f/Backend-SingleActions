@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Report;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 

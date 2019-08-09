@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryNoticeList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +24,7 @@ class LotteryNoticeDeleteAction
         FrontendLotteryNoticeList::where('sort', '>', $sort)->decrement('sort'); //sort排后面的自减1
         if ($lotteriesEloq->errors()->messages()) {
             DB::rollback();
-            return $contll->msgOut(false, [], '400', $lotteryNoticeELoq->errors()->messages());
+            return $contll->msgOut(false, [], '400', $lotteriesEloq->errors()->messages());
         }
         DB::commit();
         return $contll->msgOut(true);

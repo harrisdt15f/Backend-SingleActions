@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class AccountChangeTypeEditAction
@@ -30,11 +29,11 @@ class AccountChangeTypeEditAction
         $editData = $inputDatas;
         $param = implode(',', $inputDatas['param']);
         $editData['param'] = $param;
-        $pastEloq = $this->model::find($inputDatas['id']);
-        $contll->editAssignment($pastEloq, $editData);
-        $pastEloq->save();
-        if ($pastEloq->errors()->messages()) {
-            return $contll->msgOut(false, [], '400', $pastEloq->errors()->messages());
+        $accountsTypeEloq = $this->model::find($inputDatas['id']);
+        $contll->editAssignment($accountsTypeEloq, $editData);
+        $accountsTypeEloq->save();
+        if ($accountsTypeEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '400', $accountsTypeEloq->errors()->messages());
         }
         return $contll->msgout(true);
     }

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Log;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\FrontendSystemLog;
 use Illuminate\Http\JsonResponse;
 

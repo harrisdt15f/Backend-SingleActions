@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;

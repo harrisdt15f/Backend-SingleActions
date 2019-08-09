@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Backend\Menu;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Backend\BackendAdminRoute;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +17,7 @@ class MenuAllRequireInfosAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $routeCollection = Route::getRoutes()->get();
+        $routeInfo = [];
         if ($inputDatas['type'] == 0) {
             foreach ($routeCollection as $key => $r) {
                 if (isset($r->action['as']) && $r->action['prefix'] !== '_debugbar') {
@@ -37,7 +38,6 @@ class MenuAllRequireInfosAction
 
 //        $editMenu = BackendSystemMenu::all();
             //        $routeMatchingName = $editMenu->where('route', '!=', '#')->keyBy('route')->toArray();
-            $routeInfo = [];
             $registeredRoute = BackendAdminRoute::pluck('route_name')->toArray();
             foreach ($routeCollection as $key => $r) {
                 if (isset($r->action['as']) && $r->action['prefix'] !== '_debugbar' && preg_match('#^' . $routeEndKey . '#',

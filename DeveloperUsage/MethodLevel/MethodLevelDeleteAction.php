@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\MethodLevel;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\MethodLevel\LotteryMethodsWaysLevel;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class MethodLevelDeleteAction
@@ -27,15 +26,13 @@ class MethodLevelDeleteAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        try {
-            $this->model::find($inputDatas['id'])->delete();
-            //删除玩法等级列表缓存
-            $contll->deleteCache();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $methodLevelEloq = $this->model::find($inputDatas['id']);
+        $methodLevelEloq->delete();
+        if ($methodLevelEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $methodLevelEloq->errors()->messages());
         }
+        //删除玩法等级列表缓存
+        $contll->deleteCache();
+        return $contll->msgOut(true);
     }
 }

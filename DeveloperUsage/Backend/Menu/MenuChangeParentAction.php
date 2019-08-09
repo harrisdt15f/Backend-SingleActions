@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Backend\Menu;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Menu\BackendSystemMenu;
 use Illuminate\Http\JsonResponse;
 

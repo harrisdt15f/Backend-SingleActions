@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Exception;

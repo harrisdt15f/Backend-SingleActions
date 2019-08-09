@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Illuminate\Http\JsonResponse;
 
@@ -21,9 +21,10 @@ class NoticeDetailAction
     /**
      * 公告列表
      * @param  BackEndApiMainController  $contll
+     * @param  $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $searchAbleFields = ['type'];
         $orderFields = 'id';

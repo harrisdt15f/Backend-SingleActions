@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Advertisement;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Advertisement\FrontendSystemAdsType;
 use Exception;
 use Illuminate\Http\JsonResponse;

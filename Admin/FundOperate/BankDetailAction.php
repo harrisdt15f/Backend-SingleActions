@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\FundOperate;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Fund\FrontendSystemBank;
 use Illuminate\Http\JsonResponse;
 

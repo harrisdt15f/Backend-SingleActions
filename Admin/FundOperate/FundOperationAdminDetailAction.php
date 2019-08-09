@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\FundOperate;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminUser;
 use App\Models\Admin\Fund\BackendAdminRechargePermitGroup;
 use App\Models\Admin\SystemConfiguration;
@@ -31,7 +31,7 @@ class FundOperationAdminDetailAction
         $data = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields, $orderFields, $orderFlow);
         $sysConfiguresEloq = SystemConfiguration::where('sign', 'admin_recharge_daily_limit')->first();
         $finalData['admin_user'] = $data;
-        $finalData['dailyFundLimit'] = $sysConfiguresEloq['value'];
+        $finalData['dailyFundLimit'] = $sysConfiguresEloq->value;
         return $contll->msgOut(true, $finalData);
     }
 }

@@ -2,10 +2,9 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\TaskScheduling;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\TaskScheduling\CronJob;
 use Illuminate\Http\JsonResponse;
-use Exception;
 
 class TaskSchedulingDeleteAction
 {
@@ -27,13 +26,11 @@ class TaskSchedulingDeleteAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        try {
-            $this->model::find($inputDatas['id'])->delete();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $errorCode, $msg);
+        $cronJobEloq = $this->model::find($inputDatas['id']);
+        $cronJobEloq->delete();
+        if ($cronJobEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $cronJobEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class PopularLotteriesEditAction
@@ -28,16 +27,13 @@ class PopularLotteriesEditAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
-        try {
-            $pastDataEloq->lotteries_sign = $inputDatas['lotteries_sign'];
-            $pastDataEloq->lotteries_id = $inputDatas['lotteries_id'];
-            $pastDataEloq->save();
-            $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $pastDataEloq->lotteries_sign = $inputDatas['lotteries_sign'];
+        $pastDataEloq->lotteries_id = $inputDatas['lotteries_id'];
+        $pastDataEloq->save();
+        if ($pastDataEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $pastDataEloq->errors()->messages());
         }
+        $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
+        return $contll->msgOut(true);
     }
 }

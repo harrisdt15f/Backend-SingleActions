@@ -2,13 +2,12 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Game\Lottery\LotteryIssue;
 use Illuminate\Http\JsonResponse;
 
 class LotteriesDeleteIssuesAction
 {
-    protected $model;
     protected const TYPE_IDS = 1; //删除类型：ids
     protected const TYPE_DAY = 2; //删除类型：某个彩种一天的所有奖期
 

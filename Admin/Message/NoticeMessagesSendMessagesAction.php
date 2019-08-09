@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Message;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\InternalNoticeMessage;
 use App\Models\Admin\BackendAdminUser;
 use App\Models\Admin\Message\BackendSystemNoticeList;

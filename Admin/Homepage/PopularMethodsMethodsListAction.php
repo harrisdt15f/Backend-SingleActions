@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryFnfBetableList;
 use App\Models\Admin\Homepage\FrontendLotteryFnfBetableMethod;
 use App\Models\Game\Lottery\LotteryList;

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Message;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Message\BackendSystemInternalMessage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;

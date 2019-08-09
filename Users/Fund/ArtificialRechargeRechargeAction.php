@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\AccountChange;
 use App\Lib\Common\FundOperation;
 use App\Lib\Common\InternalNoticeMessage;

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\District;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\UsersRegion;
 use Illuminate\Http\JsonResponse;
 
@@ -33,15 +33,12 @@ class RegionAddAction
         if ($isExist === true) {
             return $contll->msgOut(false, [], '101001');
         }
-        try {
-            $configure = new $this->model();
-            $configure->fill($inputDatas);
-            $configure->save();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $configureEloq = new $this->model();
+        $configureEloq->fill($inputDatas);
+        $configureEloq->save();
+        if ($configureEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $configureEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

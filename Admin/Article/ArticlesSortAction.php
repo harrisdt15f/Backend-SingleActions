@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Article;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -39,6 +39,8 @@ class ArticlesSortAction
                 $stationaryData = $this->model::find($inputDatas['rearways_id']);
                 $stationaryData->sort = $inputDatas['rearways_sort'];
                 $this->model::where('sort', '>', $inputDatas['front_sort'])->where('sort', '<=', $inputDatas['rearways_sort'])->decrement('sort');
+            } else {
+                return $contll->msgOut(false);
             }
             $stationaryData->save();
             DB::commit();

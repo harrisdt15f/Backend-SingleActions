@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
 use App\Models\Game\Lottery\LotteryList;
@@ -26,20 +26,20 @@ class LotteriesDeleteAction
         $gameMethodsEloq = $lotteryEloq->gameMethods;
         $lotteryEloq->delete();
         if ($lotteryEloq->errors()->messages()) {
-            return $contll->msgOut(false, [], '400', $lotteryEloq->errors()->messages());
+            return $contll->msgOut(false, [], '', $lotteryEloq->errors()->messages());
         }
         foreach ($issueRuleEloq as $issueRuleItem) {
             $issueRuleItem->delete();
             if ($issueRuleItem->errors()->messages()) {
                 DB::rollback();
-                return $contll->msgOut(false, [], '400', $issueRuleItem->errors()->messages());
+                return $contll->msgOut(false, [], '', $issueRuleItem->errors()->messages());
             }
         }
         foreach ($gameMethodsEloq as $gameMethodItem) {
             $gameMethodItem->delete();
             if ($gameMethodItem->errors()->messages()) {
                 DB::rollback();
-                return $contll->msgOut(false, [], '400', $gameMethodItem->errors()->messages());
+                return $contll->msgOut(false, [], '', $gameMethodItem->errors()->messages());
             }
         }
         DB::commit();

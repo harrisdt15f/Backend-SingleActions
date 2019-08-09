@@ -2,17 +2,16 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsTypesParam;
 use Illuminate\Http\JsonResponse;
-use DB;
 
 class AccountChangeTypeFieldDelAction
 {
     protected $model;
 
     /**
-     * @param  FrontendUsersAccountsType $frontendUsersAccountsType
+     * @param  FrontendUsersAccountsTypesParam $frontendUsersAccountsTypesParam
      */
     public function __construct(FrontendUsersAccountsTypesParam $frontendUsersAccountsTypesParam)
     {
@@ -22,6 +21,7 @@ class AccountChangeTypeFieldDelAction
     /**
      * 帐变类型字段添加删除
      * @param  BackEndApiMainController $contll
+     * @param  $inputDatas
      * @return JsonResponse
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse

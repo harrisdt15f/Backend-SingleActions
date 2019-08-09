@@ -2,12 +2,10 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class ActivityInfosAddAction
 {
@@ -54,7 +52,7 @@ class ActivityInfosAddAction
         $addDatas['sort'] = $sort;
         $addDatas['admin_id'] = $contll->partnerAdmin->id;
         $addDatas['admin_name'] = $contll->partnerAdmin->name;
-        $addDatas['type'] =$inputDatas['type'];
+        $addDatas['type'] = $inputDatas['type'];
         $activityEloq = new $this->model();
         $activityEloq->fill($addDatas);
         $activityEloq->save();

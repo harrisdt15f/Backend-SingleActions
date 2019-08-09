@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminUser;
 use Illuminate\Http\JsonResponse;
 
@@ -29,15 +29,12 @@ class BackendAuthUpdateUserGroupAction
         $targetUserEloq = $this->model::find($inputDatas['id']);
         if ($targetUserEloq !== null) {
             $targetUserEloq->group_id = $inputDatas['group_id'];
-            try {
-                $targetUserEloq->save();
-                $result = $targetUserEloq->toArray();
-                return $contll->msgOut(true, $result);
-            } catch (Exception $e) {
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+            $targetUserEloq->save();
+            if ($targetUserEloq->errors()->messages()) {
+                return $contll->msgOut(false, [], '', $targetUserEloq->errors()->messages());
             }
+            $result = $targetUserEloq->toArray();
+            return $contll->msgOut(true, $result);
         }
     }
 }

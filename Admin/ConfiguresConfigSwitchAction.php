@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\SystemConfiguration;
 use Exception;
 use Illuminate\Http\JsonResponse;

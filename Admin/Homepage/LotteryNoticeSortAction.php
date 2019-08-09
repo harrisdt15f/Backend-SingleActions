@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryNoticeList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -28,6 +28,8 @@ class LotteryNoticeSortAction
             $stationaryData = FrontendLotteryNoticeList::find($inputDatas['rearways_id']);
             $stationaryData->sort = $inputDatas['rearways_sort'];
             FrontendLotteryNoticeList::where('sort', '>', $inputDatas['front_sort'])->where('sort', '<=', $inputDatas['rearways_sort'])->decrement('sort');
+        } else {
+            return $contll->msgOut(false);
         }
         $stationaryData->save();
         if ($stationaryData->errors()->messages()) {

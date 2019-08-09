@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendWebRoute;
 use Illuminate\Http\JsonResponse;
 

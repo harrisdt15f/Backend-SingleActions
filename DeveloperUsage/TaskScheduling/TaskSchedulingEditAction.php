@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\TaskScheduling;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\TaskScheduling\CronJob;
 use Illuminate\Http\JsonResponse;
 

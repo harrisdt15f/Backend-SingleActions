@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendAppRoute;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class FrontendAppRouteIsOpenAction
@@ -27,15 +26,12 @@ class FrontendAppRouteIsOpenAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $pastData = $this->model::find($inputDatas['id']);
-        try {
-            $pastData->is_open = $inputDatas['is_open'];
-            $pastData->save();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $routeELoq = $this->model::find($inputDatas['id']);
+        $routeELoq->is_open = $inputDatas['is_open'];
+        $routeELoq->save();
+        if ($routeELoq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $routeELoq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

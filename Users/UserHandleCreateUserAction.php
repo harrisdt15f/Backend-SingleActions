@@ -2,10 +2,10 @@
 
 namespace App\Http\SingleActions\Backend\Users;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\FrontendUser;
-use App\Models\User\UserPublicAvatar;
 use App\Models\User\Fund\FrontendUsersAccount;
+use App\Models\User\UserPublicAvatar;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -38,7 +38,7 @@ class UserHandleCreateUserAction
         $inputDatas['vip_level'] = 0;
         $inputDatas['parent_id'] = 0;
         $inputDatas['register_ip'] = request()->ip();
-        $inputDatas['pic_path'] =UserPublicAvatar::getRandomAvatar();
+        $inputDatas['pic_path'] = UserPublicAvatar::getRandomAvatar();
         DB::beginTransaction();
         try {
             $user = $this->model::create($inputDatas);

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminAccessGroup;
 use App\Models\Admin\Fund\BackendAdminRechargePermitGroup;
 use App\Models\DeveloperUsage\Menu\BackendSystemMenu;

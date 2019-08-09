@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendAllocatedModel;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -28,15 +28,12 @@ class FrontendAllocatedModelEditAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
-        try {
-            $pastDataEloq->label = $inputDatas['label'];
-            $pastDataEloq->en_name = $inputDatas['en_name'];
-            $pastDataEloq->save();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $pastDataEloq->label = $inputDatas['label'];
+        $pastDataEloq->en_name = $inputDatas['en_name'];
+        $pastDataEloq->save();
+        if ($pastDataEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $pastDataEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

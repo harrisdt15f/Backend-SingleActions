@@ -2,10 +2,9 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 
@@ -46,7 +45,7 @@ class ActivityInfosEditAction
             }
             if (isset($inputDatas['preview_pic'])) {
                 unset($editData['preview_pic']);
-                $previewpreviewPic = $pastDataEloq->preview_pic_path;
+                $pastPreviewPic = $pastDataEloq->preview_pic_path;
                 $previewPic = $imageObj->uploadImg($inputDatas['preview_pic'], $depositPath);
                 if ($previewPic['success'] === false) {
                     return $this->msgOut(false, [], '400', $previewPic['msg']);
@@ -62,8 +61,8 @@ class ActivityInfosEditAction
         if (isset($inputDatas['pic'])) {
             $imageObj->deletePic(substr($pastPic, 1));
         }
-        if (isset($inputDatas['pic'])) {
-            $imageObj->deletePic(substr($previewpreviewPic, 1));
+        if (isset($inputDatas['preview_pic'])) {
+            $imageObj->deletePic(substr($pastPreviewPic, 1));
         }
         $contll->deleteCache(); //删除前台首页缓存
         return $contll->msgOut(true);

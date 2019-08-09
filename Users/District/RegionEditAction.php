@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\District;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\UsersRegion;
 use Illuminate\Http\JsonResponse;
 
@@ -33,16 +33,13 @@ class RegionEditAction
         if ($isExist === true) {
             return $contll->msgOut(false, [], '101001');
         }
-        try {
-            $editDataEloq = $this->model::find($inputDatas['id']);
-            $editDataEloq->region_id = $inputDatas['region_id'];
-            $editDataEloq->region_name = $inputDatas['region_name'];
-            $editDataEloq->save();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $regionEloq = $this->model::find($inputDatas['id']);
+        $regionEloq->region_id = $inputDatas['region_id'];
+        $regionEloq->region_name = $inputDatas['region_name'];
+        $regionEloq->save();
+        if ($regionEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $regionEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class PopularLotteriesAddAction
@@ -35,16 +34,13 @@ class PopularLotteriesAddAction
             'lotteries_sign' => $inputDatas['lotteries_sign'],
             'sort' => $sort,
         ];
-        try {
-            $popularLotteriesEloq = new $this->model;
-            $popularLotteriesEloq->fill($addData);
-            $popularLotteriesEloq->save();
-            $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $popularLotteriesEloq = new $this->model;
+        $popularLotteriesEloq->fill($addData);
+        $popularLotteriesEloq->save();
+        if ($popularLotteriesEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $popularLotteriesEloq->errors()->messages());
         }
+        $this->model::updatePopularLotteriesCache(); //更新首页热门彩票缓存
+        return $contll->msgOut(true);
     }
 }

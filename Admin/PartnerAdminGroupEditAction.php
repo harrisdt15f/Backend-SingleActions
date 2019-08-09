@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminAccessGroup;
 use App\Models\Admin\Fund\BackendAdminRechargePermitGroup;
 use App\Models\Admin\Fund\BackendAdminRechargePocessAmount;
@@ -44,7 +44,10 @@ class PartnerAdminGroupEditAction
                 $datas->save();
                 //检查提交的权限中 是否有 人工充值权限  $isManualRecharge
                 $fundOperationCriteriaEloq = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first();
-                $isManualRecharge = in_array($fundOperationCriteriaEloq->id, $role, true);
+                $isManualRecharge = false;
+                if ($fundOperationCriteriaEloq !== null) {
+                    $isManualRecharge = in_array($fundOperationCriteriaEloq->id, $role, true);
+                }
                 //检查资金操作权限表是 否已存在 在当前用户组  $check
                 $fundOperatinEloq = BackendAdminRechargePermitGroup::where('group_id', $datas->id)->first();
                 $fundOperation = new BackendAdminRechargePocessAmount();

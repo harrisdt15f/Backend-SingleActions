@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
@@ -31,15 +31,12 @@ class BackendAuthUpdatePAdmPasswordAction
             ['name', '=', $inputDatas['name']],
         ])->first();
         if ($targetUserEloq !== null) {
-            try {
-                $targetUserEloq->password = Hash::make($inputDatas['password']);
-                $targetUserEloq->save();
-                return $contll->msgOut(true);
-            } catch (Exception $e) {
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+            $targetUserEloq->password = Hash::make($inputDatas['password']);
+            $targetUserEloq->save();
+            if ($targetUserEloq->errors()->messages()) {
+                return $contll->msgOut(false, [], '', $targetUserEloq->errors()->messages());
             }
+            return $contll->msgOut(true);
         } else {
             return $contll->msgOut(false, [], '100004');
         }

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\MethodLevel;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\MethodLevel\LotteryMethodsWaysLevel;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\AccountChange;
 use App\Models\User\FrontendUser;
 use App\Models\User\Fund\FrontendUsersAccount;

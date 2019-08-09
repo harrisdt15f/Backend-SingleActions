@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Log;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\IpAddress;
 use App\Models\Admin\SystemAddressIp;
 use Illuminate\Http\JsonResponse;

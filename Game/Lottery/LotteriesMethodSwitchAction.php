@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Game\Lottery\LotteryMethod;
 use Illuminate\Http\JsonResponse;
 
@@ -16,17 +16,14 @@ class LotteriesMethodSwitchAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        try {
-            $pastData = LotteryMethod::find($inputDatas['id']);
-            $pastData->status = $inputDatas['status'];
-            $pastData->save();
-            //清理彩种玩法缓存
-            $contll->clearMethodCache();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $lotteryMethodEloq = LotteryMethod::find($inputDatas['id']);
+        $lotteryMethodEloq->status = $inputDatas['status'];
+        $lotteryMethodEloq->save();
+        if ($lotteryMethodEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $lotteryMethodEloq->errors()->messages());
         }
+        //清理彩种玩法缓存
+        $contll->clearMethodCache();
+        return $contll->msgOut(true);
     }
 }

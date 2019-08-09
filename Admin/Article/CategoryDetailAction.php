@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Article;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Activity\FrontendInfoCategorie;
 use Illuminate\Http\JsonResponse;
 

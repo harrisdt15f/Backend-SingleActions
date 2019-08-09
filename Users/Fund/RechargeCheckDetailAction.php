@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\BackendAdminRechargehumanLog;
 use Illuminate\Http\JsonResponse;
 
@@ -25,7 +25,6 @@ class RechargeCheckDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-
         $fixedJoin = 1;
         $withTable = 'auditFlow';
         $withSearchAbleFields = ['apply_note'];

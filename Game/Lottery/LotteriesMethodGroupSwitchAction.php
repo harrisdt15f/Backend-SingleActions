@@ -2,8 +2,9 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Game\Lottery\LotteryMethod;
+use Exception;
 use Illuminate\Http\JsonResponse;
 
 class LotteriesMethodGroupSwitchAction
@@ -23,8 +24,7 @@ class LotteriesMethodGroupSwitchAction
         try {
             $updateDate = ['status' => $inputDatas['status']];
             LotteryMethod::whereIn('id', $methodGroupIds)->update($updateDate);
-            //清理彩种玩法缓存
-            $contll->clearMethodCache();
+            $contll->clearMethodCache(); //清理彩种玩法缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();

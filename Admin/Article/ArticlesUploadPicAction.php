@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Article;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Illuminate\Http\JsonResponse;

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsTypesParam;
 use Illuminate\Http\JsonResponse;
 
@@ -11,7 +11,7 @@ class AccountChangeTypeFieldDetailAction
     protected $model;
 
     /**
-     * @param  FrontendUsersAccountsType  $frontendUsersAccountsType
+     * @param  FrontendUsersAccountsTypesParam  $frontendUsersAccountsTypesParam
      */
     public function __construct(FrontendUsersAccountsTypesParam $frontendUsersAccountsTypesParam)
     {

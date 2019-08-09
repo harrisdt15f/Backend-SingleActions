@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\FrontendUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;

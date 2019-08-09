@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\District;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\UsersRegion;
 use Illuminate\Http\JsonResponse;
 

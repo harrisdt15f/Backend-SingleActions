@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendPageBanner;
 use Illuminate\Http\JsonResponse;
 
@@ -21,11 +21,12 @@ class HomepageBannerDetailAction
     /**
      * 首页轮播图列表
      * @param  BackEndApiMainController  $contll
+     * @param  $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll,$inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $data = $this->model::where('flag',$inputDatas['flag'])->orderBy('sort', 'asc')->get()->toArray();
+        $data = $this->model::where('flag', $inputDatas['flag'])->orderBy('sort', 'asc')->get()->toArray();
         return $contll->msgOut(true, $data);
     }
 }

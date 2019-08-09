@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendAppRoute;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class FrontendAppRouteDeleteAction
@@ -27,13 +26,11 @@ class FrontendAppRouteDeleteAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        try {
-            $this->model::where('id', $inputDatas['id'])->delete();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $routeEloq = $this->model::find($inputDatas['id']);
+        $routeEloq->delete();
+        if ($routeEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $routeEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

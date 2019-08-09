@@ -3,7 +3,7 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Events\IssueGenerateEvent;
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use Illuminate\Http\JsonResponse;
 
 class LotteriesGenerateIssueAction

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Log;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendSystemLog;
 use Illuminate\Http\JsonResponse;
 
@@ -11,7 +11,7 @@ class HandleLogDetailsAction
     protected $model;
 
     /**
-     * @param  BackendSystemLog  $BackendSystemLog
+     * @param  BackendSystemLog  $backendSystemLog
      */
     public function __construct(BackendSystemLog $backendSystemLog)
     {

@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Backend\Menu;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Menu\BackendSystemMenu;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class MenuAddAction
@@ -45,14 +44,11 @@ class MenuAddAction
             $menuEloq->pid = $inputDatas['parentId'];
             $menuEloq->level = $inputDatas['level'];
         }
-        try {
-            $menuEloq->save();
-            $menuEloq->refreshStar();
-            return $contll->msgOut(true, $menuEloq->toArray());
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $menuEloq->save();
+        if ($menuEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $menuEloq->errors()->messages());
         }
+        $menuEloq->refreshStar();
+        return $contll->msgOut(true, $menuEloq->toArray());
     }
 }

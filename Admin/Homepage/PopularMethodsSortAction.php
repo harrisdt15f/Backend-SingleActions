@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryFnfBetableList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
@@ -40,6 +40,8 @@ class PopularMethodsSortAction
                 $stationaryData = $this->model::find($inputDatas['rearways_id']);
                 $stationaryData->sort = $inputDatas['rearways_sort'];
                 $this->model::where('sort', '>', $inputDatas['front_sort'])->where('sort', '<=', $inputDatas['rearways_sort'])->decrement('sort');
+            } else {
+                return $contll->msgOut(false);
             }
             $stationaryData->save();
             DB::commit();

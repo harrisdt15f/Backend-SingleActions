@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\DeveloperUsage\Frontend;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendAllocatedModel;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class FrontendAllocatedModelAddAction
@@ -33,15 +32,12 @@ class FrontendAllocatedModelAddAction
                 return $contll->msgOut(false, [], '101603');
             }
         }
-        try {
-            $moduleEloq = new $this->model;
-            $moduleEloq->fill($inputDatas);
-            $moduleEloq->save();
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $moduleEloq = new $this->model;
+        $moduleEloq->fill($inputDatas);
+        $moduleEloq->save();
+        if ($moduleEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $moduleEloq->errors()->messages());
         }
+        return $contll->msgOut(true);
     }
 }

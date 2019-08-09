@@ -2,9 +2,8 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsType;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class AccountChangeTypeDeleteAction
@@ -27,13 +26,11 @@ class AccountChangeTypeDeleteAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        try {
-            $this->model::find($inputDatas['id'])->delete();
-            return $contll->msgout(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $accountsType = $this->model::find($inputDatas['id']);
+        $accountsType->delete();
+        if ($accountsType->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $accountsType->errors()->messages());
         }
+        return $contll->msgout(true);
     }
 }
