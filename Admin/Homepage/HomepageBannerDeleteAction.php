@@ -40,7 +40,7 @@ class HomepageBannerDeleteAction
             DB::commit();
             $deleteStatus = $imageObj->deletePic(substr($pastData->pic_path, 1));
             //清除首页banner缓存
-            $contll->deleteCache();
+            $contll->deleteCache($pastDataEloq->flag);
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
