@@ -51,7 +51,7 @@ class HomepageBannerEditAction
             $contll->editAssignment($pastData, $editData);
             $pastData->save();
             //清除首页banner缓存
-            $contll->deleteCache();
+            $contll->deleteCache($pastData->flag);
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();

@@ -50,7 +50,7 @@ class HomepageBannerAddAction
             $rotationChartEloq->fill($addData);
             $rotationChartEloq->save();
             //清除首页banner缓存
-            $contll->deleteCache();
+            $contll->deleteCache($addData['flag']);
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();
