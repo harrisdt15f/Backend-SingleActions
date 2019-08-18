@@ -31,6 +31,7 @@ class TaskSchedulingDeleteAction
         if ($cronJobEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '', $cronJobEloq->errors()->messages());
         }
+        $this->model::getOpenCronJob(1); //更新任务调度缓存
         return $contll->msgOut(true);
     }
 }

@@ -20,6 +20,7 @@ class TaskSchedulingAddAction
         if ($data['success'] === false) {
             return $contll->msgOut(false, [], '400', $data['message']);
         }
+        CronJob::getOpenCronJob(1); //更新任务调度缓存
         return $contll->msgOut(true);
     }
 }
