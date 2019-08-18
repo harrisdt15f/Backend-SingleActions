@@ -46,6 +46,7 @@ class LotteriesDeleteAction
         $imageObj = new ImageArrange();
         $imageObj->deletePic(substr($pastIcon, 1));
         $lotteryEloq->lotteryInfoCache(); //更新首页lotteryInfo缓存
+        LotteryList::updateAllLotteryByCache(); //更新所有彩票&玩法缓存
         FrontendLotteryRedirectBetList::updatePopularLotteriesCache(); //更新首页热门彩票缓存
         return $contll->msgOut(true);
     }

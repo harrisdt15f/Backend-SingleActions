@@ -31,6 +31,7 @@ class ConfiguresEditAction
         $contll->editAssignment($pastDataEloq, $inputDatas);
         try {
             $pastDataEloq->save();
+            SystemConfiguration::updateConfigCache($pastDataEloq->sign, $pastDataEloq->value); //更新该配置有关的缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();

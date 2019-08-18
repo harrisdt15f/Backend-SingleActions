@@ -37,6 +37,7 @@ class ConfiguresAddAction
             $configure = new $this->model();
             $configure->fill($addDatas);
             $configure->save();
+            SystemConfiguration::updateConfigCache($configure->sign, $configure->value); //更新该配置有关的缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();

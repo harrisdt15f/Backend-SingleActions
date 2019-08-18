@@ -58,6 +58,7 @@ class LotteriesAddAction
         DB::commit();
         CacheRelated::deleteCachePic($inputDatas['lottery']['icon_name']); //从定时清理的缓存图片中移除上传成功的图片
         $lotteryEloq->lotteryInfoCache(); //更新首页lotteryInfo缓存
+        LotteryList::updateAllLotteryByCache(); //更新所有彩票&玩法缓存
         FrontendLotteryRedirectBetList::updatePopularLotteriesCache(); //更新首页热门彩票缓存
         return $contll->msgOut(true);
     }
