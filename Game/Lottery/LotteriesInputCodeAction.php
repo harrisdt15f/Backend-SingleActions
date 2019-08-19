@@ -27,19 +27,7 @@ class LotteriesInputCodeAction
         if ($issueEloq->official_code !== null) {
             return $contll->msgOut(false, [], '101704');
         }
-        $status_encode = LotteryIssue::ENCODED;
-        $issueEloq->status_encode = $status_encode;
-        $issueEloq->encode_time = time();
-        $issueEloq->official_code = $inputDatas['code'];
-        $issueEloq->encode_id = $contll->partnerAdmin->id;
-        $issueEloq->encode_name = $contll->partnerAdmin->name;
-        $issueEloq->save();
-        if ($issueEloq->errors()->messages()) {
-            return $contll->msgOut(false, [], '', $issueEloq->errors()->messages());
-        }
-        if (!empty($issueEloq->toArray())) {
-            dispatch(new IssueEncoder($issueEloq->toArray()))->onQueue('open_numbers');
-        }
+        LotteryIssue::enCode($inputDatas['lottery_id'], $inputDatas['issue'], $inputDatas['code']);
         return $contll->msgOut(true);
     }
 }
