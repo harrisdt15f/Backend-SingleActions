@@ -3,8 +3,8 @@
 namespace App\Http\SingleActions\Backend\Admin;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\Configure;
 use App\Models\Admin\SystemConfiguration;
-use Exception;
 use Illuminate\Http\JsonResponse;
 
 class ConfiguresEditAction
@@ -27,16 +27,13 @@ class ConfiguresEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $pastDataEloq = $this->model::find($inputDatas['id']);
-        $contll->editAssignment($pastDataEloq, $inputDatas);
-        try {
-            $pastDataEloq->save();
-            SystemConfiguration::updateConfigCache($pastDataEloq->sign, $pastDataEloq->value); //更新该配置有关的缓存
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+        $configureEloq = $this->model::find($inputDatas['id']);
+        $contll->editAssignment($configureEloq, $inputDatas);
+        $configureEloq->save();
+        if ($configureEloq->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $configureEloq->errors()->messages());
         }
+        configure::set($configureEloq->sign, $configureEloq->value); //更新配置缓存
+        return $contll->msgOut(true);
     }
 }

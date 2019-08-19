@@ -25,8 +25,8 @@ class UserHandleBankCardListAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $searchAbleFields = ['username', 'owner_name', 'card_number', 'bank_sign', 'status'];
-        $data = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null);
+        $searchAbleFields = ['bank_name', 'branch', 'username', 'owner_name', 'card_number', 'bank_sign', 'status'];
+        $data = $contll->generateSearchQuery($this->model, $searchAbleFields);
         return $contll->msgOut(true, $data);
     }
 }

@@ -29,10 +29,7 @@ class ConfiguresDeleteAction
     {
         try {
             $configure = $this->model::find($inputDatas['id']);
-            $sign = $configure->sign;
-            $value = $configure->value;
             $configure->delete();
-            SystemConfiguration::updateConfigCache($sign, $value); //更新该配置有关的缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $errorObj = $e->getPrevious()->getPrevious();
