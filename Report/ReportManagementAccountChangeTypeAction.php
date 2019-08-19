@@ -6,7 +6,7 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsType;
 use Illuminate\Http\JsonResponse;
 
-class reportManagementAccountChangeTypeAction
+class ReportManagementAccountChangeTypeAction
 {
     /**
      * 帐变类型列表

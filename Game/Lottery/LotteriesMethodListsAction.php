@@ -49,7 +49,10 @@ class LotteriesMethodListsAction
                     $methodGrops = $litems->methodGroups;
                     foreach ($methodGrops as $mgItems) {
                         $curentMethodGroup = $mgItems->method_group;
-                        $methodGroupBool = $mgItems->where('lottery_id', $currentLotteryId)->where('method_group', $curentMethodGroup)->where('status', 1)->exists();
+                        $methodGroupBool = $mgItems->where('lottery_id', $currentLotteryId)
+                            ->where('method_group', $curentMethodGroup)
+                            ->where('status', 1)
+                            ->exists();
                         $methodGroupstatus = $methodGroupBool ? LotteryMethod::OPEN : LotteryMethod::CLOSE;
                         //玩法组 data
                         $methodGroup = $this->methodData($currentLotteryId, $curentMethodGroup, $methodGroupstatus);
@@ -60,20 +63,34 @@ class LotteriesMethodListsAction
                         $methodRows = $mgItems->methodRows;
                         foreach ($methodRows as $mrItems) {
                             $currentMethodRow = $mrItems->method_row;
-                            $methodRowBool = $mrItems->where('lottery_id', $currentLotteryId)->where('method_group', $curentMethodGroup)->where('method_row', $currentMethodRow)->where('status', 1)->exists();
+                            $methodRowBool = $mrItems->where('lottery_id', $currentLotteryId)
+                                ->where('method_group', $curentMethodGroup)
+                                ->where('method_row', $currentMethodRow)
+                                ->where('status', 1)
+                                ->exists();
                             $methodRowstatus = $methodRowBool ? LotteryMethod::OPEN : LotteryMethod::CLOSE;
                             //玩法行 data
-                            $methodRow = $this->methodData($currentLotteryId, $curentMethodGroup, $methodRowstatus, $currentMethodRow);
+                            $methodRow = $this->methodData(
+                                $currentLotteryId,
+                                $curentMethodGroup,
+                                $methodRowstatus,
+                                $currentMethodRow
+                            );
                             //$temp 插入玩法行data
-                            $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['child'][$mrItems->method_row]['data'] = $methodRow;
+                            $temp[$seriesId][$currentLotteryId]['child']
+                            [$curentMethodGroup]['child'][$mrItems->method_row]['data'] = $methodRow;
                             //玩法data
                             //###########################################################################################
-                            $methodData = LotteryMethod::where('lottery_id', $currentLotteryId)->where('method_group', $curentMethodGroup)->where('method_row', $currentMethodRow)->get();
+                            $methodData = LotteryMethod::where('lottery_id', $currentLotteryId)
+                                ->where('method_group', $curentMethodGroup)
+                                ->where('method_row', $currentMethodRow)
+                                ->get();
                             // $methodData = $mrItems->methodDetails
                             //     ->where('method_group', $curentMethodGroup)
                             //     ->where('method_row', $currentMethodRow);
                             //$temp 插入玩法data
-                            $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['child'][$mrItems->method_row]['child'] = $methodData;
+                            $temp[$seriesId][$currentLotteryId]['child']
+                            [$curentMethodGroup]['child'][$mrItems->method_row]['child'] = $methodData;
                         }
                     }
                 }
@@ -106,5 +123,4 @@ class LotteriesMethodListsAction
         }
         return $dataArr;
     }
-
 }

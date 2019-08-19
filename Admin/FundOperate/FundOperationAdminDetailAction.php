@@ -28,7 +28,15 @@ class FundOperationAdminDetailAction
         $withSearchAbleFields = ['fund'];
         $orderFields = 'id';
         $orderFlow = 'asc';
-        $data = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields, $orderFields, $orderFlow);
+        $data = $contll->generateSearchQuery(
+            $eloqM,
+            $searchAbleFields,
+            $fixedJoin,
+            $withTable,
+            $withSearchAbleFields,
+            $orderFields,
+            $orderFlow
+        );
         $sysConfiguresEloq = SystemConfiguration::where('sign', 'admin_recharge_daily_limit')->first();
         $finalData['admin_user'] = $data;
         $finalData['dailyFundLimit'] = $sysConfiguresEloq->value;

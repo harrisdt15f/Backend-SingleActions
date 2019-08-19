@@ -32,7 +32,11 @@ class HomepageUploadIcoAction
         $pastData = $this->model::where('en_name', 'frontend.ico')->first();
         $imageObj = new ImageArrange();
         $folderName = 'frontend';
-        $depositPath = $imageObj->depositPath($folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name) . '/ico';
+        $depositPath = $imageObj->depositPath(
+            $folderName,
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        ) . '/ico';
         $ico = $imageObj->uploadImg($inputDatas['ico'], $depositPath);
         $pastIco = $pastData->value;
         try {

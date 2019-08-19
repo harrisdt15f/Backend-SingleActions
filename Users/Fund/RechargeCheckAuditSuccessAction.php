@@ -67,7 +67,9 @@ class RechargeCheckAuditSuccessAction
             //修改用户金额
             $UserAccounts = FrontendUsersAccount::where('user_id', $rechargeLog->user_id)->first();
             $UserAccountsEdit = ['balance' => $balance];
-            $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)->where('updated_at', $UserAccounts->updated_at)->update($UserAccountsEdit);
+            $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)
+                ->where('updated_at', $UserAccounts->updated_at)
+                ->update($UserAccountsEdit);
             if ($editStatus === 0) {
                 DB::rollBack();
                 return $contll->msgOut(false, [], '100902');
@@ -75,7 +77,14 @@ class RechargeCheckAuditSuccessAction
             //用户帐变表
             $accountChangeReportEloq = new FrontendUsersAccountsReport();
             $accountChangeObj = new AccountChange();
-            $accountChangeObj->addData($accountChangeReportEloq, $userData, $rechargeLog['amount'], $UserAccounts->balance, $balance, $accountChangeTypeEloq);
+            $accountChangeObj->addData(
+                $accountChangeReportEloq,
+                $userData,
+                $rechargeLog['amount'],
+                $UserAccounts->balance,
+                $balance,
+                $accountChangeTypeEloq
+            );
             //发送站内消息提醒管理员
             $contll->sendMessage($rechargeLog->admin_id, $contll->successMessage);
             DB::commit();

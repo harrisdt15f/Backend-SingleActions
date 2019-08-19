@@ -25,7 +25,16 @@ class AdvertisementTypeDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $datas = $this->model::select('id', 'name', 'type', 'status', 'ext_type', 'l_size', 'w_size', 'size')->get()->toArray();
+        $datas = $this->model::select(
+            'id',
+            'name',
+            'type',
+            'status',
+            'ext_type',
+            'l_size',
+            'w_size',
+            'size'
+        )->get()->toArray();
         return $contll->msgOut(true, $datas);
     }
 }

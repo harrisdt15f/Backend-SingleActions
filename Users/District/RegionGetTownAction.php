@@ -26,11 +26,17 @@ class RegionGetTownAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $isExist = $this->model::where(['region_level' => $inputDatas['region_level'], 'region_id' => $inputDatas['region_parent_id']])->exists();
+        $isExist = $this->model::where([
+            'region_level' => $inputDatas['region_level'],
+            'region_id' => $inputDatas['region_parent_id']
+        ])->exists();
         if ($isExist === false) {
             return $contll->msgOut(false, [], '101000');
         }
-        $datas = $this->model::where(['region_level' => 4, 'region_parent_id' => $inputDatas['region_parent_id']])->get()->toArray();
+        $datas = $this->model::where([
+            'region_level' => 4,
+            'region_parent_id' => $inputDatas['region_parent_id']
+        ])->get()->toArray();
         return $contll->msgOut(true, $datas);
     }
 }

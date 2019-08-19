@@ -40,8 +40,11 @@ class MenuAllRequireInfosAction
             //        $routeMatchingName = $editMenu->where('route', '!=', '#')->keyBy('route')->toArray();
             $registeredRoute = BackendAdminRoute::pluck('route_name')->toArray();
             foreach ($routeCollection as $key => $r) {
-                if (isset($r->action['as']) && $r->action['prefix'] !== '_debugbar' && preg_match('#^' . $routeEndKey . '#',
-                    $r->action['as']) === 1 && !in_array($r->action['as'], $registeredRoute)) {
+                if (isset($r->action['as'])
+                    && $r->action['prefix'] !== '_debugbar'
+                    && preg_match('#^' . $routeEndKey . '#', $r->action['as']) === 1
+                    && !in_array($r->action['as'], $registeredRoute)
+                ) {
                     $routeShortData[$key]['url'] = $r->uri;
                     $routeShortData[$key]['controller'] = $r->action['controller'];
                     $routeShortData[$key]['route_name'] = $r->action['as'];

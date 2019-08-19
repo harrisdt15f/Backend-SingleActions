@@ -32,5 +32,4 @@ class ActivityInfosDetailAction
         $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
         return $contll->msgOut(true, $datas);
     }
-
 }

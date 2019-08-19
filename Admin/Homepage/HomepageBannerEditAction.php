@@ -37,7 +37,11 @@ class HomepageBannerEditAction
             $imageObj = new ImageArrange();
             $imageObj->deletePic(substr($pastData['pic_path'], 1));
             $imageObj->deletePic(substr($pastData['thumbnail_path'], 1));
-            $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+            $depositPath = $imageObj->depositPath(
+                $contll->folderName,
+                $contll->currentPlatformEloq->platform_id,
+                $contll->currentPlatformEloq->platform_name
+            );
             $picData = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
             if ($picData['success'] === false) {
                 return $contll->msgOut(false, [], $picData['code']);

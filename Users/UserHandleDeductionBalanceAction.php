@@ -33,7 +33,9 @@ class UserHandleDeductionBalanceAction
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
         //人工扣款的帐变类型表
-        $accountChangeTypeEloq = FrontendUsersAccountsType::select('name', 'sign')->where('sign', 'artificial_deduction')->first();
+        $accountChangeTypeEloq = FrontendUsersAccountsType::select('name', 'sign')
+            ->where('sign', 'artificial_deduction')
+            ->first();
         if ($accountChangeTypeEloq === null) {
             return $contll->msgOut(false, [], '100103');
         }
@@ -46,15 +48,26 @@ class UserHandleDeductionBalanceAction
             //扣除金额
             $newBalance = $userAccountsEloq->balance - $inputDatas['amount'];
             $editArr = ['balance' => $newBalance];
-            $editStatus = FrontendUsersAccount::where('user_id', $inputDatas['user_id'])->where('updated_at', $userAccountsEloq->updated_at)->update($editArr);
+            $editStatus = FrontendUsersAccount::where('user_id', $inputDatas['user_id'])
+                ->where('updated_at', $userAccountsEloq->updated_at)
+                ->update($editArr);
             if ($editStatus === 0) {
                 return $contll->msgOut(false, [], '100105');
             }
             //添加帐变记录
-            $userEloq = $this->model::select('id', 'sign', 'top_id', 'parent_id', 'rid', 'username')->where('id', $inputDatas['user_id'])->first();
+            $userEloq = $this->model::select('id', 'sign', 'top_id', 'parent_id', 'rid', 'username')
+            ->where('id', $inputDatas['user_id'])
+            ->first();
             $accountChangeReportEloq = new FrontendUsersAccountsReport();
             $accountChangeObj = new AccountChange();
-            $accountChangeObj->addData($accountChangeReportEloq, $userEloq, $inputDatas['amount'], $userAccountsEloq->balance, $newBalance, $accountChangeTypeEloq);
+            $accountChangeObj->addData(
+                $accountChangeReportEloq,
+                $userEloq,
+                $inputDatas['amount'],
+                $userAccountsEloq->balance,
+                $newBalance,
+                $accountChangeTypeEloq
+            );
             DB::commit();
             return $contll->msgOut(true);
         } catch (Exception $e) {

@@ -29,12 +29,15 @@ class ActivityInfosAddAction
     {
         //接收文件信息
         $imageObj = new ImageArrange();
-        $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $depositPath = $imageObj->depositPath(
+            $contll->folderName,
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        );
         $addDatas = $inputDatas;
         unset($addDatas['pic'], $addDatas['preview_pic']);
         //进行上传
         $previewPic = $imageObj->uploadImg($inputDatas['preview_pic'], $depositPath);
-
         if ($previewPic['success'] === false) {
             return $contll->msgOut(false, [], '400', $previewPic['msg']);
         }

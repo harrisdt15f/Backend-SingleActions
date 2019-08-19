@@ -16,7 +16,17 @@ class HandleLogFrontendLogsAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $logEloq = new FrontendSystemLog();
-        $searchAbleFields = ['origin', 'ip', 'device', 'os', 'os_version', 'browser', 'username', 'menu_label', 'device_type'];
+        $searchAbleFields = [
+            'origin',
+            'ip',
+            'device',
+            'os',
+            'os_version',
+            'browser',
+            'username',
+            'menu_label',
+            'device_type'
+        ];
         $data = $contll->generateSearchQuery($logEloq, $searchAbleFields);
         return $contll->msgOut(true, $data);
     }

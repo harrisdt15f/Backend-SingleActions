@@ -18,7 +18,9 @@ class LotteriesMethodGroupSwitchAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $methodGroupIds = LotteryMethod::where('lottery_id', $inputDatas['lottery_id'])->where('method_group', $inputDatas['method_group'])->pluck('id');
+        $methodGroupIds = LotteryMethod::where('lottery_id', $inputDatas['lottery_id'])
+            ->where('method_group', $inputDatas['method_group'])
+            ->pluck('id');
         if (empty($methodGroupIds)) {
             return $contll->msgOut(false, [], '101701');
         }

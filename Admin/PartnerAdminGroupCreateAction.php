@@ -37,8 +37,8 @@ class PartnerAdminGroupCreateAction
             $data['platform_id'] = $contll->currentPlatformEloq->platform_id;
             $data['group_name'] = $inputDatas['group_name'];
             $data['role'] = $inputDatas['role'];
-            $role = $inputDatas['role'] == '*' ? Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'],
-                true));
+            $role = $inputDatas['role'] == '*' ?
+                Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'], true));
             $objPartnerAdminGroup = new $this->model;
             $objPartnerAdminGroup->fill($data);
             $objPartnerAdminGroup->save();

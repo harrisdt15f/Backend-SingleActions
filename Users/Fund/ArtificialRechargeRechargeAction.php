@@ -53,7 +53,11 @@ class ArtificialRechargeRechargeAction
                 $adminFundData->fill($adminFundEdit);
                 $adminFundData->save();
                 //插入审核表
-                $auditFlowID = $this->insertAuditFlow($partnerAdmin->id, $partnerAdmin->name, $inputDatas['apply_note']);
+                $auditFlowID = $this->insertAuditFlow(
+                    $partnerAdmin->id,
+                    $partnerAdmin->name,
+                    $inputDatas['apply_note']
+                );
                 //发送站内消息 提醒有权限的管理员审核
                 $this->sendMessage();
             } else {
@@ -66,7 +70,9 @@ class ArtificialRechargeRechargeAction
                 $UserAccounts = FrontendUsersAccount::where('user_id', $inputDatas['id'])->first();
                 $balance = $UserAccounts->balance + $inputDatas['amount'];
                 $UserAccountsEdit = ['balance' => $balance];
-                $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)->where('updated_at', $UserAccounts->updated_at)->update($UserAccountsEdit);
+                $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)
+                ->where('updated_at', $UserAccounts->updated_at)
+                ->update($UserAccountsEdit);
                 //充值失败回滚
                 if ($editStatus === 0) {
                     DB::rollBack();
@@ -76,15 +82,35 @@ class ArtificialRechargeRechargeAction
                 $accountChangeReportEloq = new FrontendUsersAccountsReport();
                 $accountChangeObj = new AccountChange();
                 $userEloq = FrontendUser::find($inputDatas['id']);
-                $accountChangeObj->addData($accountChangeReportEloq, $userEloq->toArray(), $inputDatas['amount'], $UserAccounts->balance, $balance, $accountChangeTypeEloq);
+                $accountChangeObj->addData(
+                    $accountChangeReportEloq,
+                    $userEloq->toArray(),
+                    $inputDatas['amount'],
+                    $UserAccounts->balance,
+                    $balance,
+                    $accountChangeTypeEloq
+                );
             }
             //添加人工充值明细表
             $auditFlowID = $auditFlowID ?? null;
             $newFund = $newFund ?? null;
-            $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $inputDatas['amount'], $newFund, $contll->currentPartnerAccessGroup->role);
+            $this->insertFundLog(
+                $partnerAdmin,
+                $userEloq,
+                $auditFlowID,
+                $inputDatas['amount'],
+                $newFund,
+                $contll->currentPartnerAccessGroup->role
+            );
             //用户 users_recharge_histories 表
             $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
-            $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $inputDatas['amount'], $contll->currentPartnerAccessGroup->role);
+            $companyOrderNum = $this->insertRechargeHistory(
+                $userEloq,
+                $auditFlowID,
+                $deposit_mode,
+                $inputDatas['amount'],
+                $contll->currentPartnerAccessGroup->role
+            );
             // 用户 users_recharge_logs 表
             $this->insertRechargeLog($companyOrderNum, $deposit_mode, $contll->log_uuid);
             DB::commit();
@@ -163,7 +189,18 @@ class ArtificialRechargeRechargeAction
         $in_out = BackendAdminRechargehumanLog::DECREMENT;
         $comment = '[给用户人工充值]==>-' . $amount . '|[目前额度]==>' . $newFund;
         $fundOperationObj = new FundOperation();
-        $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $partnerAdmin->id, $partnerAdmin->name, $userEloq->id, $userEloq->username, $amount, $comment, $auditFlowID);
+        $fundOperationObj->insertOperationDatas(
+            $rechargeLog,
+            $type,
+            $in_out,
+            $partnerAdmin->id,
+            $partnerAdmin->name,
+            $userEloq->id,
+            $userEloq->username,
+            $amount,
+            $comment,
+            $auditFlowID
+        );
     }
 
     /**
@@ -179,7 +216,16 @@ class ArtificialRechargeRechargeAction
     {
         $userRechargeHistory = new UsersRechargeHistorie();
         $status = $role !== '*' ? UsersRechargeHistorie::UNDERWAYAUDIT : UsersRechargeHistorie::AUDITSUCCESS;
-        $rechargeHistoryArr = $this->insertRechargeHistoryArr($userEloq->id, $userEloq->username, $userEloq->is_tester, $userEloq->top_id, $amount, $auditFlowID, $status, $deposit_mode);
+        $rechargeHistoryArr = $this->insertRechargeHistoryArr(
+            $userEloq->id,
+            $userEloq->username,
+            $userEloq->is_tester,
+            $userEloq->top_id,
+            $amount,
+            $auditFlowID,
+            $status,
+            $deposit_mode
+        );
         $userRechargeHistory->fill($rechargeHistoryArr);
         $userRechargeHistory->save();
         return $userRechargeHistory->company_order_num;
@@ -217,8 +263,20 @@ class ArtificialRechargeRechargeAction
      * @param  float  $fee             [手续费]
      * @return array
      */
-    public function insertRechargeHistoryArr($user_id, $user_name, $is_tester, $top_agent, $amount, $audit_flow_id, $status, $deposit_mode, $channel = null, $payment_id = null, $real_amount = null, $fee = null): array
-    {
+    public function insertRechargeHistoryArr(
+        $user_id,
+        $user_name,
+        $is_tester,
+        $top_agent,
+        $amount,
+        $audit_flow_id,
+        $status,
+        $deposit_mode,
+        $channel = null,
+        $payment_id = null,
+        $real_amount = null,
+        $fee = null
+    ): array {
         $insertSqlArr = [
             'user_id' => $user_id,
             'user_name' => $user_name,
@@ -263,8 +321,16 @@ class ArtificialRechargeRechargeAction
      * @param  float  $real_amount
      * @return array
      */
-    public function insertRechargeLogArr($company_order_num, $log_num, $deposit_mode, $req_type_1_params = null, $req_type_2_params = null, $req_type_4_params = null, $req_type = null, $real_amount = null): array
-    {
+    public function insertRechargeLogArr(
+        $company_order_num,
+        $log_num,
+        $deposit_mode,
+        $req_type_1_params = null,
+        $req_type_2_params = null,
+        $req_type_4_params = null,
+        $req_type = null,
+        $real_amount = null
+    ): array {
         $insertSqlArr = [
             'company_order_num' => $company_order_num,
             'log_num' => $log_num,

@@ -26,7 +26,12 @@ class RegionSearchTownAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $datas = $this->model::select('a.*', 'b.region_name as country_name', 'c.region_name as city_name', 'd.region_name as province_name')
+        $datas = $this->model::select(
+            'a.*',
+            'b.region_name as country_name',
+            'c.region_name as city_name',
+            'd.region_name as province_name'
+        )
             ->from('users_regions as a')
             ->leftJoin('users_regions as b', 'a.region_parent_id', '=', 'b.region_id')
             ->leftJoin('users_regions as c', 'b.region_parent_id', '=', 'c.region_id')

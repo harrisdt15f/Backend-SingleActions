@@ -27,7 +27,18 @@ class LotteriesListsAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $lotteries = $this->model::where('series_id', $inputDatas['series_id'])->with('issueRule:id,lottery_id,lottery_name,begin_time,end_time,issue_seconds,first_time,adjust_time,encode_time,issue_count,status,created_at,updated_at')->get()->toArray();
+        $lotteries = $this->model::where('series_id', $inputDatas['series_id'])
+        ->with('issueRule:id,
+            lottery_id,
+            lottery_name,
+            begin_time,
+            end_time,
+            issue_seconds,
+            first_time,
+            adjust_time,encode_time,
+            issue_count,
+            status')
+        ->get()->toArray();
         return $contll->msgOut(true, $lotteries);
     }
 }

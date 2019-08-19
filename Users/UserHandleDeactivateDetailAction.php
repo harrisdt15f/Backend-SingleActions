@@ -29,7 +29,11 @@ class UserHandleDeactivateDetailAction
     {
         $userEloq = $this->model::find($inputDatas['user_id']);
         if ($userEloq !== null) {
-            $data = FrontendUsersPrivacyFlow::where('user_id', $inputDatas['user_id'])->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])->orderBy('created_at', 'desc')->get()->toArray();
+            $data = FrontendUsersPrivacyFlow::where('user_id', $inputDatas['user_id'])
+            ->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->toArray();
             return $contll->msgOut(true, $data);
         }
     }

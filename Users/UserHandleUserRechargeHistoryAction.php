@@ -16,7 +16,11 @@ class UserHandleUserRechargeHistoryAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $datas = UsersRechargeHistorie::select('user_name', 'amount', 'deposit_mode', 'status', 'created_at')->where('user_id', $inputDatas['user_id'])->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])->get()->toArray();
+        $datas = UsersRechargeHistorie::select('user_name', 'amount', 'deposit_mode', 'status', 'created_at')
+            ->where('user_id', $inputDatas['user_id'])
+            ->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])
+            ->get()
+            ->toArray();
         return $contll->msgOut(true, $datas);
     }
 }

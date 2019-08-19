@@ -21,7 +21,8 @@ class NoticeMessagesSendMessagesAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $adminsArr = BackendAdminUser::select('id', 'group_id')->whereIn('id', $inputDatas['admins_id'])->get()->toArray();
+        $adminsArr = BackendAdminUser::select('id', 'group_id')
+            ->whereIn('id', $inputDatas['admins_id'])->get()->toArray();
         DB::beginTransaction();
         try {
             $messageObj = new InternalNoticeMessage();

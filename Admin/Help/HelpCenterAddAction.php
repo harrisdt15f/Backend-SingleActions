@@ -6,7 +6,6 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Help;
 
-
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Supports\FrontendUsersHelpCenter;
 use Illuminate\Http\JsonResponse;
@@ -38,5 +37,4 @@ class HelpCenterAddAction
         }
         return $contll->msgOut(true);
     }
-
 }

@@ -22,11 +22,19 @@ class PopularMethodsMethodsListAction
     {
         $lotteryIds = FrontendLotteryFnfBetableMethod::groupBy('lottery_id')->pluck('lottery_id')->toArray();
         //取出开启状态的彩票
-        $lotterys = LotteryList::whereIn('en_name', $lotteryIds)->where('status', 1)->orderBy('id', 'asc')->pluck('cn_name')->toArray();
+        $lotterys = LotteryList::whereIn('en_name', $lotteryIds)
+            ->where('status', 1)
+            ->orderBy('id', 'asc')->pluck('cn_name')->toArray();
         $data = [];
         foreach ($lotterys as $lottery) {
             $methodIds = FrontendLotteryFnfBetableMethod::where('lottery_name', $lottery)->pluck('id');
-            $methods = LotteryMethod::select('lottery_id', 'lottery_name', 'id as method_id', 'method_name', 'status')->whereIn('id', $methodIds)->get()->toArray();
+            $methods = LotteryMethod::select(
+                'lottery_id',
+                'lottery_name',
+                'id as method_id',
+                'method_name',
+                'status'
+            )->whereIn('id', $methodIds)->get()->toArray();
             $data[$lottery] = $methods;
         }
         return $contll->msgOut(true, $data);

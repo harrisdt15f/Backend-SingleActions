@@ -31,7 +31,11 @@ class HomepageUploadPicAction
     {
         $pastData = $this->model::where('en_name', $inputDatas['en_name'])->first();
         $imageObj = new ImageArrange();
-        $depositPath = $imageObj->depositPath($inputDatas['en_name'], $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $depositPath = $imageObj->depositPath(
+            $inputDatas['en_name'],
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        );
         $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
         if ($pic['success'] === false) {
             return $contll->msgOut(false, [], '400', $pic['msg']);

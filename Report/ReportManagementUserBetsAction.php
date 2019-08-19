@@ -6,7 +6,7 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Project;
 use Illuminate\Http\JsonResponse;
 
-class reportManagementUserBetsAction
+class ReportManagementUserBetsAction
 {
     /**
      * 玩家注单报表
@@ -16,7 +16,17 @@ class reportManagementUserBetsAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $projectEloq = new Project;
-        $searchAbleFields = ['username', 'top_id', 'parent_id', 'series_id', 'lottery_sign', 'method_sign', 'is_tester', 'issue', 'status'];
+        $searchAbleFields = [
+            'username',
+            'top_id',
+            'parent_id',
+            'series_id',
+            'lottery_sign',
+            'method_sign',
+            'is_tester',
+            'issue',
+            'status'
+        ];
         $field = 'id';
         $type = 'desc';
         $datas = $contll->generateSearchQuery($projectEloq, $searchAbleFields, 0, null, null, $field, $type);

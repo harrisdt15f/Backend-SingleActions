@@ -24,7 +24,17 @@ class HandleLogDetailsAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $searchAbleFields = ['origin', 'ip', 'device', 'os', 'os_version', 'browser', 'admin_name', 'menu_label', 'device_type'];
+        $searchAbleFields = [
+            'origin',
+            'ip',
+            'device',
+            'os',
+            'os_version',
+            'browser',
+            'admin_name',
+            'menu_label',
+            'device_type'
+        ];
         $data = $contll->generateSearchQuery($this->model, $searchAbleFields);
         return $contll->msgOut(true, $data);
     }

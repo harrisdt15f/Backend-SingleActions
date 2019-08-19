@@ -27,7 +27,14 @@ class HomepageNavOneAction
     {
         $frontendModuleEloq = new $this->model;
         $navEloq = $frontendModuleEloq->getModuleEloq('nav.one');
-        $datas = $this->model::select('id', 'label', 'en_name', 'value', 'show_num', 'status')->where('pid', $navEloq->id)->get()->toArray();
+        $datas = $this->model::select(
+            'id',
+            'label',
+            'en_name',
+            'value',
+            'show_num',
+            'status'
+        )->where('pid', $navEloq->id)->get()->toArray();
         return $contll->msgOut(true, $datas);
     }
 }

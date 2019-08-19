@@ -43,7 +43,18 @@ class FundOperationAddFundAction
             $in_out = BackendAdminRechargehumanLog::INCREMENT;
             $rechargeLog = new BackendAdminRechargehumanLog();
             $comment = '[人工充值额度操作]==>+' . $inputDatas['fund'] . '|[目前额度]==>' . $newFund;
-            $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $contll->partnerAdmin->id, $contll->partnerAdmin->name, $adminDataEloq->id, $adminDataEloq->name, $inputDatas['fund'], $comment, null);
+            $fundOperationObj->insertOperationDatas(
+                $rechargeLog,
+                $type,
+                $in_out,
+                $contll->partnerAdmin->id,
+                $contll->partnerAdmin->name,
+                $adminDataEloq->id,
+                $adminDataEloq->name,
+                $inputDatas['fund'],
+                $comment,
+                null
+            );
             DB::commit();
             return $contll->msgOut(true);
         } catch (Exception $e) {

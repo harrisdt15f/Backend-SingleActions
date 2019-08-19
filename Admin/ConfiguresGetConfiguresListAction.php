@@ -25,7 +25,18 @@ class ConfiguresGetConfiguresListAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $partnerSysConfigEloq = $this->model::select('id', 'parent_id', 'pid', 'sign', 'name', 'description', 'value', 'add_admin_id', 'last_update_admin_id', 'status', 'created_at', 'updated_at')->where('display', 1)->get();
+        $partnerSysConfigEloq = $this->model::select(
+            'id',
+            'parent_id',
+            'pid',
+            'sign',
+            'name',
+            'description',
+            'value',
+            'add_admin_id',
+            'last_update_admin_id',
+            'status'
+        )->where('display', 1)->get();
         $data = [];
         foreach ($partnerSysConfigEloq as $partnerSysConfigItem) {
             if ($partnerSysConfigItem->parent_id === 0) {

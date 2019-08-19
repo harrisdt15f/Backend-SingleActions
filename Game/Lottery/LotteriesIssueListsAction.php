@@ -48,7 +48,10 @@ class LotteriesIssueListsAction
                 $endTimeStamp = time(); // 不存在时间段搜索时，默认返回现在还未结束的奖期
                 //选定彩种并选择了展示已过期的期数时  获取结束时间>那一期的奖期
                 if (isset($contll->inputs['lottery_id'], $contll->inputs['previous_number'])) {
-                    $lotteryIssueEloq = LotteryIssue::getPastIssue($contll->inputs['lottery_id'], $contll->inputs['previous_number']);
+                    $lotteryIssueEloq = LotteryIssue::getPastIssue(
+                        $contll->inputs['lottery_id'],
+                        $contll->inputs['previous_number']
+                    );
                     $endTimeStamp = $lotteryIssueEloq->end_time ?? time();
                 }
                 $timeCondtions = '[["end_time",">",' . $endTimeStamp . ']]';
@@ -61,7 +64,15 @@ class LotteriesIssueListsAction
         $withTable = 'lottery';
         $orderFields = 'begin_time';
         $orderFlow = 'asc';
-        $issueList = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, null, $orderFields, $orderFlow);
+        $issueList = $contll->generateSearchQuery(
+            $eloqM,
+            $searchAbleFields,
+            $fixedJoin,
+            $withTable,
+            null,
+            $orderFields,
+            $orderFlow
+        );
         $this->insertCodeExample($issueList); //插入开奖号码例子
         return $contll->msgOut(true, $issueList);
     }

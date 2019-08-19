@@ -26,7 +26,11 @@ class PopularLotteriesDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $lotterieEloqs = $this->model::select('id', 'lotteries_id', 'sort')->with('lotteries:id,cn_name,icon_path')->orderBy('sort', 'asc')->get();
+        $lotterieEloqs = $this->model::select(
+            'id',
+            'lotteries_id',
+            'sort'
+        )->with('lotteries:id,cn_name,icon_path')->orderBy('sort', 'asc')->get();
         $datas = [];
         foreach ($lotterieEloqs as $lotterieItem) {
             $data = [

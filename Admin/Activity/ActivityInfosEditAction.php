@@ -33,7 +33,11 @@ class ActivityInfosEditAction
         //如果修改了图片 上传新图片
         if (isset($inputDatas['pic']) || isset($inputDatas['preview_pic'])) {
             $imageObj = new ImageArrange();
-            $depositPath = $imageObj->depositPath($contll->folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+            $depositPath = $imageObj->depositPath(
+                $contll->folderName,
+                $contll->currentPlatformEloq->platform_id,
+                $contll->currentPlatformEloq->platform_name
+            );
             if (isset($inputDatas['pic'])) {
                 unset($editData['pic']);
                 $pastPic = $pastDataEloq->pic_path;

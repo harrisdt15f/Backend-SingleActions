@@ -33,8 +33,8 @@ class PartnerAdminGroupEditAction
     {
         $id = $inputDatas['id'];
         $datas = $this->model::find($id);
-        $role = $inputDatas['role'] == '*' ? Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'],
-            true));
+        $role = $inputDatas['role'] == '*' ?
+            Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'], true));
         if ($datas !== null) {
             DB::beginTransaction();
             $datas->group_name = $inputDatas['group_name'];
@@ -43,7 +43,8 @@ class PartnerAdminGroupEditAction
             try {
                 $datas->save();
                 //检查提交的权限中 是否有 人工充值权限  $isManualRecharge
-                $fundOperationCriteriaEloq = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first();
+                $fundOperationCriteriaEloq = BackendSystemMenu::select('id')
+                    ->where('route', '/manage/recharge')->first();
                 $isManualRecharge = false;
                 if ($fundOperationCriteriaEloq !== null) {
                     $isManualRecharge = in_array($fundOperationCriteriaEloq->id, $role, true);

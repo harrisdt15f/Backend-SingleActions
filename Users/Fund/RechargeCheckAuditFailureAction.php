@@ -64,7 +64,18 @@ class RechargeCheckAuditFailureAction
             $in_out = $rechargeLogeloqM::INCREMENT;
             $comment = '[充值审核失败额度返还]==>+' . $rechargeLog['amount'] . '|[目前额度]==>' . $newFund;
             $fundOperationObj = new FundOperation();
-            $fundOperationObj->insertOperationDatas($rechargeLogeloqM, $type, $in_out, null, null, $auditFlow->admin_id, $auditFlow->admin_name, $rechargeLog->amount, $comment, null);
+            $fundOperationObj->insertOperationDatas(
+                $rechargeLogeloqM,
+                $type,
+                $in_out,
+                null,
+                null,
+                $auditFlow->admin_id,
+                $auditFlow->admin_name,
+                $rechargeLog->amount,
+                $comment,
+                null
+            );
             //发送站内消息提醒管理员
             $contll->sendMessage($rechargeLog->admin_id, $contll->failureMessage);
             DB::commit();

@@ -22,12 +22,16 @@ class LotteryNoticeSortAction
         if ($inputDatas['sort_type'] == 1) {
             $stationaryData = FrontendLotteryNoticeList::find($inputDatas['front_id']);
             $stationaryData->sort = $inputDatas['front_sort'];
-            FrontendLotteryNoticeList::where('sort', '>=', $inputDatas['front_sort'])->where('sort', '<', $inputDatas['rearways_sort'])->increment('sort');
+            FrontendLotteryNoticeList::where('sort', '>=', $inputDatas['front_sort'])
+                ->where('sort', '<', $inputDatas['rearways_sort'])
+                ->increment('sort');
         } elseif ($inputDatas['sort_type'] == 2) {
             //下拉排序
             $stationaryData = FrontendLotteryNoticeList::find($inputDatas['rearways_id']);
             $stationaryData->sort = $inputDatas['rearways_sort'];
-            FrontendLotteryNoticeList::where('sort', '>', $inputDatas['front_sort'])->where('sort', '<=', $inputDatas['rearways_sort'])->decrement('sort');
+            FrontendLotteryNoticeList::where('sort', '>', $inputDatas['front_sort'])
+                ->where('sort', '<=', $inputDatas['rearways_sort'])
+                ->decrement('sort');
         } else {
             return $contll->msgOut(false);
         }

@@ -31,7 +31,11 @@ class ArticlesUploadPicAction
         $imageObj = new ImageArrange();
         $file = $inputDatas['pic'];
         $folderName = $inputDatas['folder_name'];
-        $depositPath = $imageObj->depositPath($folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $depositPath = $imageObj->depositPath(
+            $folderName,
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        );
         //进行上传
         $pic = $imageObj->uploadImg($file, $depositPath);
         if ($pic['success'] === false) {

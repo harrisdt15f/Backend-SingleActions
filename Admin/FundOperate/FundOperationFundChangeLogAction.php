@@ -16,7 +16,9 @@ class FundOperationFundChangeLogAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $datas = BackendAdminRechargehumanLog::where('admin_id', $inputDatas['admin_id'])->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])->get()->toArray();
+        $datas = BackendAdminRechargehumanLog::where('admin_id', $inputDatas['admin_id'])
+            ->whereBetween('created_at', [$inputDatas['start_time'], $inputDatas['end_time']])
+            ->get()->toArray();
         return $contll->msgout(true, $datas);
     }
 }

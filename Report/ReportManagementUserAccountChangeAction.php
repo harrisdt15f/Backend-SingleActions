@@ -6,7 +6,7 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsReport;
 use Illuminate\Http\JsonResponse;
 
-class reportManagementUserAccountChangeAction
+class ReportManagementUserAccountChangeAction
 {
     /**
      * 玩家帐变报表
@@ -22,7 +22,15 @@ class reportManagementUserAccountChangeAction
         $withSearchAbleFields = ['in_out', 'type'];
         $field = 'created_at';
         $type = 'desc';
-        $datas = $contll->generateSearchQuery($accountChangeEloq, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields, $field, $type);
+        $datas = $contll->generateSearchQuery(
+            $accountChangeEloq,
+            $searchAbleFields,
+            $fixedJoin,
+            $withTable,
+            $withSearchAbleFields,
+            $field,
+            $type
+        );
         foreach ($datas as $key => $report) {
             $data = $report->toArray();
             $reportArr = [

@@ -32,7 +32,15 @@ class RechargeCheckDetailAction
         $orderFields = 'id';
         $orderFlow = 'desc';
         $contll->inputs['type'] = 2;
-        $data = $contll->generateSearchQuery($this->model, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields, $orderFields, $orderFlow);
+        $data = $contll->generateSearchQuery(
+            $this->model,
+            $searchAbleFields,
+            $fixedJoin,
+            $withTable,
+            $withSearchAbleFields,
+            $orderFields,
+            $orderFlow
+        );
         return $contll->msgOut(true, $data);
     }
 }

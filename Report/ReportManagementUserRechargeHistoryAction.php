@@ -6,7 +6,7 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\UsersRechargeHistorie;
 use Illuminate\Http\JsonResponse;
 
-class reportManagementUserRechargeHistoryAction
+class ReportManagementUserRechargeHistoryAction
 {
     /**
      * 玩家充值报表

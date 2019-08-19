@@ -26,7 +26,8 @@ class NoticeMessagesAdminMessagesAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $messagesEloq = $this->model::where('receive_admin_id', $contll->partnerAdmin->id)->with('noticeMessage')->orderBy('created_at', 'desc')->get();
+        $messagesEloq = $this->model::where('receive_admin_id', $contll->partnerAdmin->id)
+            ->with('noticeMessage')->orderBy('created_at', 'desc')->get();
         $messages = [];
         foreach ($messagesEloq as $messageEloq) {
             $data = [

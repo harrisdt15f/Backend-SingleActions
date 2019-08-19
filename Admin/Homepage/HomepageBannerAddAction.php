@@ -31,7 +31,11 @@ class HomepageBannerAddAction
     {
         $imageObj = new ImageArrange();
         $folderName = $contll->folderName;
-        $depositPath = $imageObj->depositPath($folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $depositPath = $imageObj->depositPath(
+            $folderName,
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        );
         $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
         if ($pic['success'] === false) {
             return $contll->msgOut(false, [], '400', $pic['msg']);

@@ -26,7 +26,11 @@ class SystemUploadPiclAction
         $imageObj = new ImageArrange();
         $file = $inputDatas['pic'];
         $folderName = $inputDatas['folder_name'];
-        $depositPath = $imageObj->depositPath($folderName, $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $depositPath = $imageObj->depositPath(
+            $folderName,
+            $contll->currentPlatformEloq->platform_id,
+            $contll->currentPlatformEloq->platform_name
+        );
         $pic = $imageObj->uploadImg($file, $depositPath);
         if ($pic['success'] === false) {
             return $contll->msgOut(false, [], '400', $pic['msg']);
@@ -45,8 +49,6 @@ class SystemUploadPiclAction
         }
         $cachePic[$pic['name']] = $pic;
         Cache::put('cache_pic', $cachePic, $expiresAt);
-
         return $contll->msgOut(true, $pic);
     }
-
 }

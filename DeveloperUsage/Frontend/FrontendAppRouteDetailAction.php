@@ -25,7 +25,8 @@ class FrontendAppRouteDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $datas = $this->model::select('id', 'route_name', 'frontend_model_id', 'title', 'description', 'is_open')->get()->toArray();
+        $datas = $this->model::select('id', 'route_name', 'frontend_model_id', 'title', 'description', 'is_open')
+            ->get()->toArray();
         return $contll->msgOut(true, $datas);
     }
 }

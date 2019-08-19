@@ -18,8 +18,16 @@ class UserHandleCommonAppliedPasswordHandleAction
         $eloqM = $contll->modelWithNameSpace($contll->withNameSpace);
         //target model to join
         $fixedJoin = 1; //number of joining tables
-        $withTable = 'auditFlow';
-        $witTableCriterias = $withTable . ':id,admin_id,auditor_id,apply_note,auditor_note,updated_at,admin_name,auditor_name,username';
+        $withTable = 'auditFlow:
+            id,
+            admin_id,
+            auditor_id,
+            apply_note,
+            auditor_note,
+            updated_at,
+            admin_name,
+            auditor_name,
+            username';
         $searchAbleFields = ['type', 'status', 'created_at', 'updated_at'];
         $withSearchAbleFields = ['username'];
         $data = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields);
