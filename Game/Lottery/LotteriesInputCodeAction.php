@@ -27,7 +27,7 @@ class LotteriesInputCodeAction
         if ($issueEloq->official_code !== null) {
             return $contll->msgOut(false, [], '101704');
         }
-        LotteryIssue::enCode($inputDatas['lottery_id'], $inputDatas['issue'], $inputDatas['code']);
+        LotteryIssue::encode($inputDatas['lottery_id'], $inputDatas['issue'], $inputDatas['code']);
         return $contll->msgOut(true);
     }
 }

@@ -30,7 +30,7 @@ class WinningNumberSetLotteryNumberAction
         if (in_array($lotteryId, $closeLottery)) {
             return $contll->msgOut(false);
         }
-        LotteryIssue::enCode($lotteryId, $issue, $code);
+        LotteryIssue::encode($lotteryId, $issue, $code);
         //####################返回信息需要处理####################
         return $contll->msgOut(true);
     }

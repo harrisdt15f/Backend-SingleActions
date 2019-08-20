@@ -25,10 +25,16 @@ class CategoryDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $datas = $this->model::from('frontend_info_categories as self')
-            ->leftJoin('frontend_info_categories as secondary', 'self.parent', '=', 'secondary.id')
-            ->select('self.*', 'secondary.title as parent_title')
-            ->get()->toArray();
-        return $contll->msgOut(true, $datas);
+        $categorieEloq = $this->model::with('parentCategorie:id,title')->get();
+        $data = [];
+        foreach ($categorieEloq as $key => $item) {
+            $data[$key]['id'] = $item->id;
+            $data[$key]['title'] = $item->title;
+            $data[$key]['parent'] = $item->parent;
+            $data[$key]['template'] = $item->template;
+            $data[$key]['platform_id'] = $item->platform_id;
+            $data[$key]['parent_title'] = $item->parentCategorie->title ?? null;
+        }
+        return $contll->msgOut(true, $data);
     }
 }
