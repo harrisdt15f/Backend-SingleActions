@@ -27,6 +27,9 @@ class LotteriesInputCodeAction
         if ($issueEloq->official_code !== null) {
             return $contll->msgOut(false, [], '101704');
         }
+        if ($issueEloq->end_time > time()) {
+            return $contll->msgOut(false, [], '101706');
+        }
         LotteryIssue::encode($inputDatas['lottery_id'], $inputDatas['issue'], $inputDatas['code']);
         return $contll->msgOut(true);
     }
