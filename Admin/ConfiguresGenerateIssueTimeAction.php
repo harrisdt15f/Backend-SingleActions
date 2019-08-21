@@ -3,6 +3,7 @@
 namespace App\Http\SingleActions\Backend\Admin;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\Configure;
 use App\Models\Admin\SystemConfiguration;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ConfiguresGenerateIssueTimeAction
 {
     protected $model;
+    protected $sign = 'generate_issue_time';
 
     /**
      * @param  SystemConfiguration  $systemConfiguration
@@ -29,24 +31,15 @@ class ConfiguresGenerateIssueTimeAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
-        $pastDataEloq = $this->model::where('sign', 'generate_issue_time')->first();
-        try {
-            if ($pastDataEloq !== null) {
-                $pastDataEloq->value = $inputDatas['value'];
-                $pastDataEloq->save();
-                Cache::forever('generateIssueTime', $pastDataEloq->value);
-            } else {
-                $bool = $this->createIssueConfigure($contll, $inputDatas['value']);
-                if ($bool === false) {
-                    return $contll->msgOut(false, [], '100702');
-                }
+        $pastDataEloq = $this->model::where('sign', $this->sign)->first();
+        if ($pastDataEloq === null) {
+            $bool = $this->createIssueConfigure($contll, $inputDatas['value']);
+            if ($bool === false) {
+                return $contll->msgOut(false, [], '100702');
             }
-            return $contll->msgOut(true);
-        } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
         }
+        Configure::set($this->sign, $inputDatas['value']);
+        return $contll->msgOut(true);
     }
 
     /**
@@ -78,7 +71,7 @@ class ConfiguresGenerateIssueTimeAction
             $data = [
                 'parent_id' => $configureEloq->id,
                 'pid' => 1,
-                'sign' => 'generate_issue_time',
+                'sign' => $this->sign,
                 'name' => '生成奖期时间',
                 'description' => '每天自动生成奖期的时间',
                 'value' => $time,
@@ -90,7 +83,6 @@ class ConfiguresGenerateIssueTimeAction
             $issueTimeEloq = new $this->model();
             $issueTimeEloq->fill($data);
             $issueTimeEloq->save();
-            Cache::forever('generateIssueTime', $issueTimeEloq->value);
             DB::commit();
             return true;
         } catch (Exception $e) {
