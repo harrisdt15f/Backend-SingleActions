@@ -31,8 +31,7 @@ class MethodLevelDeleteAction
         if ($methodLevelEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '', $methodLevelEloq->errors()->messages());
         }
-        //删除玩法等级列表缓存
-        $contll->deleteCache();
+        $this->model::methodLevelDetail(1); //更新缓存
         return $contll->msgOut(true);
     }
 }

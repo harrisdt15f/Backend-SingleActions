@@ -3,12 +3,12 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\Common\CacheRelated;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class LotteriesMethodListsAction
 {
@@ -29,11 +29,10 @@ class LotteriesMethodListsAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $method = [];
-        $redisKey = 'play_method_list';
-        if (Cache::has($redisKey)) {
-            $method = Cache::get($redisKey);
-        } else {
+        $tags = $contll->tags;
+        $redisKey = $contll->redisKey;
+        $data = CacheRelated::getTagsCache($tags, $redisKey);
+        if ($data === false) {
             $seriesEloq = LotterySerie::get();
             foreach ($seriesEloq as $seriesIthem) {
                 $lottery = $seriesIthem->lotteries; //->where('status',1)
@@ -43,8 +42,8 @@ class LotteriesMethodListsAction
                         ->only(['id', 'cn_name', 'status']);
 //                    $methodEloq = $litems->gameMethods;
                     $currentLotteryId = $litems->en_name;
-                    $temp[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
-                    $temp[$seriesId][$currentLotteryId]['child'] = [];
+                    $method[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
+                    $method[$seriesId][$currentLotteryId]['child'] = [];
                     //#########################################################
                     $methodGrops = $litems->methodGroups;
                     foreach ($methodGrops as $mgItems) {
@@ -56,9 +55,9 @@ class LotteriesMethodListsAction
                         $methodGroupstatus = $methodGroupBool ? LotteryMethod::OPEN : LotteryMethod::CLOSE;
                         //玩法组 data
                         $methodGroup = $this->methodData($currentLotteryId, $curentMethodGroup, $methodGroupstatus);
-                        //$temp 插入玩法组data
-                        $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['data'] = $methodGroup;
-                        $temp[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['child'] = [];
+                        //$data 插入玩法组data
+                        $data[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['data'] = $methodGroup;
+                        $data[$seriesId][$currentLotteryId]['child'][$curentMethodGroup]['child'] = [];
                         //#########################################################
                         $methodRows = $mgItems->methodRows;
                         foreach ($methodRows as $mrItems) {
@@ -76,8 +75,8 @@ class LotteriesMethodListsAction
                                 $methodRowstatus,
                                 $currentMethodRow
                             );
-                            //$temp 插入玩法行data
-                            $temp[$seriesId][$currentLotteryId]['child']
+                            //$data 插入玩法行data
+                            $data[$seriesId][$currentLotteryId]['child']
                             [$curentMethodGroup]['child'][$mrItems->method_row]['data'] = $methodRow;
                             //玩法data
                             //###########################################################################################
@@ -88,19 +87,17 @@ class LotteriesMethodListsAction
                             // $methodData = $mrItems->methodDetails
                             //     ->where('method_group', $curentMethodGroup)
                             //     ->where('method_row', $currentMethodRow);
-                            //$temp 插入玩法data
-                            $temp[$seriesId][$currentLotteryId]['child']
+                            //$data 插入玩法data
+                            $data[$seriesId][$currentLotteryId]['child']
                             [$curentMethodGroup]['child'][$mrItems->method_row]['child'] = $methodData;
                         }
                     }
                 }
-                $method = array_merge($method, $temp);
             }
-            $hourToStore = 24;
-            $expiresAt = Carbon::now()->addHours($hourToStore);
-            Cache::put($redisKey, $method, $expiresAt);
+            $minuteToStore = 60 * 24;
+            CacheRelated::setTagsCache($tags, $redisKey, $data, $minuteToStore);
         }
-        return $contll->msgOut(true, $method);
+        return $contll->msgOut(true, $data);
     }
 
     /**

@@ -3,12 +3,11 @@
 namespace App\Http\SingleActions\Backend\System;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\User\UserPublicAvatar;
-use function Couchbase\defaultDecoder;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class SystemUploadPiclAction
 {
@@ -41,14 +40,14 @@ class SystemUploadPiclAction
             UserPublicAvatar::create($newPubliData);
             return $contll->msgOut(true, $pic);
         }
-        $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp; //设置图片过期时间6小时
-        $hourToStore = 24 * 2;
-        $expiresAt = Carbon::now()->addHours($hourToStore);
-        if (Cache::has('cache_pic')) {
-            $cachePic = Cache::get('cache_pic');
-        }
+        //设置图片过期时间6小时
+        $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
+        $tags = 'images';
+        $redisKey = 'cleaned_images';
+        $cachePic = CacheRelated::getTagsCache($tags, $redisKey);
         $cachePic[$pic['name']] = $pic;
-        Cache::put('cache_pic', $cachePic, $expiresAt);
+        $minuteToStore = 60 * 24 * 2;
+        CacheRelated::setTagsCache($tags, $redisKey, $cachePic, $minuteToStore);
         return $contll->msgOut(true, $pic);
     }
 }
