@@ -16,6 +16,7 @@ class LotterySeriesAddAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
+        $inputDatas['encode_splitter'] = $inputDatas['encode_splitter'] === 'space' ? ' ' : $inputDatas['encode_splitter'];
         $lotterySerieEloq = new LotterySerie();
         $lotterySerieEloq->fill($inputDatas);
         $lotterySerieEloq->save();

@@ -66,7 +66,7 @@ class NoticeAddAction
             $messageNoticeData = [
                 'receive_user_id' => $user->id,
                 'notices_content_id' => $noticesContentId,
-                'status' => FrontendMessageNotice::STATUS_UN_READ,
+                'status' => FrontendMessageNotice::STATUS_UNREAD,
             ];
             $messageNoticeEloq = new FrontendMessageNotice();
             $messageNoticeEloq->fill($messageNoticeData);
