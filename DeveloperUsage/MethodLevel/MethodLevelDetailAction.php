@@ -5,7 +5,6 @@ namespace App\Http\SingleActions\Backend\DeveloperUsage\MethodLevel;
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\MethodLevel\LotteryMethodsWaysLevel;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class MethodLevelDetailAction
 {
@@ -26,13 +25,7 @@ class MethodLevelDetailAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        if (Cache::has('methodLeveDetail')) {
-            $data = Cache::get('methodLeveDetail');
-        } else {
-            $methodLevelEloq = new $this->model;
-            $data = $methodLevelEloq->methodLevelDetail();
-            Cache::forever('methodLeveDetail', $data);
-        }
+        $data = $this->model::methodLevelDetail();
         return $contll->msgOut(true, $data);
     }
 }

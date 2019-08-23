@@ -3,11 +3,11 @@
 namespace App\Http\SingleActions\Backend\Admin\Article;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 
 class ArticlesUploadPicAction
 {
@@ -43,13 +43,12 @@ class ArticlesUploadPicAction
         }
         //设置图片过期时间6小时
         $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
-        $hourToStore = 24 * 2;
-        $expiresAt = Carbon::now()->addHours($hourToStore);
-        if (Cache::has('cache_pic')) {
-            $cachePic = Cache::get('cache_pic');
-        }
+        $tags = 'images';
+        $redisKey = 'cleaned_images';
+        $cachePic = CacheRelated::getTagsCache($tags, $redisKey);
         $cachePic[$pic['name']] = $pic;
-        Cache::put('cache_pic', $cachePic, $expiresAt);
+        $minuteToStore = 60 * 24 * 2;
+        CacheRelated::setTagsCache($tags, $redisKey, $cachePic, $minuteToStore);
         return $contll->msgOut(true, $pic);
     }
 }
