@@ -16,6 +16,7 @@ class LotterySeriesEditAction
      */
     public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
     {
+        $inputDatas['encode_splitter'] = $inputDatas['encode_splitter'] === 'space' ? ' ' : $inputDatas['encode_splitter'];
         $lotterySerieEloq = LotterySerie::find($inputDatas['id']);
         $contll->editAssignment($lotterySerieEloq, $inputDatas);
         $lotterySerieEloq->save();
