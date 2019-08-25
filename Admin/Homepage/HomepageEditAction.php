@@ -4,9 +4,7 @@ namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\DeveloperUsage\Frontend\FrontendAllocatedModel;
-use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class HomepageEditAction
 {
@@ -46,8 +44,6 @@ class HomepageEditAction
         if (isset($inputDatas['status'])) {
             $this->model::showModelCache();
         }
-        //删除前台首页缓存
-        $contll->deleteCache($pastData->key);
         return $contll->msgOut(true);
     }
 }

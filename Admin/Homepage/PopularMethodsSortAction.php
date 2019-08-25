@@ -5,7 +5,6 @@ namespace App\Http\SingleActions\Backend\Admin\Homepage;
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryFnfBetableList;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class PopularMethodsSortAction
@@ -49,8 +48,6 @@ class PopularMethodsSortAction
             }
             $stationaryData->save();
             DB::commit();
-            //清除首页热门玩法缓存
-            $contll->deleteCache();
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();

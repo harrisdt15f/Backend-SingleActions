@@ -3,7 +3,6 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
 use App\Models\Game\Lottery\LotteryIssueRule;
@@ -11,9 +10,12 @@ use App\Models\Game\Lottery\LotteryList;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\DB;
+use App\Lib\BaseCache;
 
 class LotteriesEditAction
 {
+    use BaseCache;
+
     /**
      * 编辑彩种
      * @param   BackEndApiMainController  $contll
@@ -48,7 +50,7 @@ class LotteriesEditAction
         }
         DB::commit();
         if (isset($iconName)) {
-            CacheRelated::deleteCachePic($iconName); //从定时清理的缓存图片中移除上传成功的图片
+            self::deleteCachePic($iconName); //从定时清理的缓存图片中移除上传成功的图片
         }
         if (isset($pastIcon)) {
             ImageArrange::deletePic(substr($pastIcon, 1));

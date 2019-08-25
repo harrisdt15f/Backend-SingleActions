@@ -6,10 +6,12 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
+use App\Lib\BaseCache;
 
 class ArticlesEditAction
 {
+    use BaseCache;
+    
     protected $model;
 
     /**
@@ -43,7 +45,7 @@ class ArticlesEditAction
             $new_pic_path = $inputDatas['pic_path'];
             if ($new_pic_path != $pastPicPath) {
                 //销毁缓存
-                $contll->deleteCachePic($inputDatas['pic_name']);
+                self::deleteCachePic($inputDatas['pic_name']);
                 //删除原图
                 $pastPicPathArr = explode('|', $pastPicPath);
                 $contll->deleteImg($pastPicPathArr);

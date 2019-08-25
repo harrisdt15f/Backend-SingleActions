@@ -7,7 +7,6 @@ use App\Lib\Common\ImageArrange;
 use App\Models\DeveloperUsage\Frontend\FrontendAllocatedModel;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class HomepageUploadPicAction
 {
@@ -48,8 +47,6 @@ class HomepageUploadPicAction
             if ($pastLogoPath !== null) {
                 $imageObj->deletePic(substr($pastLogoPath, 1));
             }
-            //删除前台首页缓存
-            $contll->deleteCache($pastData->en_name);
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $imageObj->deletePic($pic['path']);

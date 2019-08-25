@@ -3,15 +3,17 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
 use App\Models\Admin\Notice\FrontendMessageNotice;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use App\Models\User\FrontendUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use App\Lib\BaseCache;
 
 class NoticeAddAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -50,7 +52,7 @@ class NoticeAddAction
         }
         DB::commit();
         if (isset($inputDatas['pic_name'])) {
-            CacheRelated::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
+            self::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
         }
         return $contll->msgOut(true);
     }

@@ -3,12 +3,15 @@
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Illuminate\Http\JsonResponse;
 
 class ActivityInfosAddAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -62,8 +65,7 @@ class ActivityInfosAddAction
         if ($activityEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $activityEloq->errors()->messages());
         }
-        //删除前台首页缓存
-        $contll->deleteCache();
+        self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }
 }

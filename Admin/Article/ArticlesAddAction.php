@@ -6,11 +6,13 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use App\Lib\BaseCache;
 
 class ArticlesAddAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -51,7 +53,7 @@ class ArticlesAddAction
             $articlesEloq->save();
             //文章发布成功  销毁图片缓存
             if (isset($inputDatas['pic_path'])) {
-                $contll->deleteCachePic($inputDatas['pic_name']);
+                self::deleteCachePic($inputDatas['pic_name']);
             }
             //发送站内消息给管理员审核
             $contll->sendMessage();

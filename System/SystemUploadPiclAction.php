@@ -3,14 +3,16 @@
 namespace App\Http\SingleActions\Backend\System;
 
 use App\Http\Controllers\backendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\User\UserPublicAvatar;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
+use App\Lib\BaseCache;
 
 class SystemUploadPiclAction
 {
+    use BaseCache;
+
     //头像上传文件夹
     public const USER_PUBLIC_AVATARS = "avatars";
 
@@ -42,12 +44,10 @@ class SystemUploadPiclAction
         }
         //设置图片过期时间6小时
         $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
-        $tags = 'images';
         $redisKey = 'cleaned_images';
-        $cachePic = CacheRelated::getTagsCache($tags, $redisKey);
+        $cachePic = self::getCacheData($redisKey);
         $cachePic[$pic['name']] = $pic;
-        $minuteToStore = 60 * 24 * 2;
-        CacheRelated::setTagsCache($tags, $redisKey, $cachePic, $minuteToStore);
+        self::saveCacheData($redisKey, $cachePic);
         return $contll->msgOut(true, $pic);
     }
 }
