@@ -45,9 +45,9 @@ class SystemUploadPiclAction
         //设置图片过期时间6小时
         $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
         $redisKey = 'cleaned_images';
-        $cachePic = self::getCacheData($redisKey);
+        $cachePic = self::getTagsCacheData($redisKey);
         $cachePic[$pic['name']] = $pic;
-        self::saveCacheData($redisKey, $cachePic);
+        self::saveTagsCacheData($redisKey, $cachePic);
         return $contll->msgOut(true, $pic);
     }
 }

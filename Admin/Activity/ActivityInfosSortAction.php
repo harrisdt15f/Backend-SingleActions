@@ -52,7 +52,7 @@ class ActivityInfosSortAction
             }
             $stationaryData->save();
             DB::commit();
-            self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+            self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();

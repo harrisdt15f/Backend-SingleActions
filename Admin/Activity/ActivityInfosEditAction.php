@@ -70,7 +70,7 @@ class ActivityInfosEditAction
         if (isset($inputDatas['preview_pic'])) {
             $imageObj->deletePic(substr($pastPreviewPic, 1));
         }
-        self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+        self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }
 }

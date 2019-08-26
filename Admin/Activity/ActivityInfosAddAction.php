@@ -65,7 +65,7 @@ class ActivityInfosAddAction
         if ($activityEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $activityEloq->errors()->messages());
         }
-        self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+        self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }
 }

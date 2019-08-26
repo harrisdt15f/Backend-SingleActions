@@ -43,7 +43,7 @@ class ActivityInfosDeleteAction
             $imageObj = new ImageArrange();
             $imageObj->deletePic(substr($pastDataEloq->pic_path, 1));
             $imageObj->deletePic(substr($pastDataEloq->preview_pic_path, 1));
-            self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+            self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();

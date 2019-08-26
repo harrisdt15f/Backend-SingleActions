@@ -31,7 +31,7 @@ class LotteriesMethodListsAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $redisKey = $contll->redisKey;
-        $data = self::getCacheData($redisKey);
+        $data = self::getTagsCacheData($redisKey);
         if (empty($data)) {
             $seriesEloq = LotterySerie::get();
             foreach ($seriesEloq as $seriesIthem) {
@@ -94,7 +94,7 @@ class LotteriesMethodListsAction
                     }
                 }
             }
-            self::saveCacheData($redisKey, $data);
+            self::saveTagsCacheData($redisKey, $data);
         }
         return $contll->msgOut(true, $data);
     }
