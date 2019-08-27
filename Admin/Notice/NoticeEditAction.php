@@ -3,13 +3,15 @@
 namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Illuminate\Http\JsonResponse;
+use App\Lib\BaseCache;
 
 class NoticeEditAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -40,7 +42,7 @@ class NoticeEditAction
             return $contll->msgOut(false, [], '400', $noticesContentEloq->errors()->messages());
         }
         if (isset($inputDatas['pic_name'])) {
-            CacheRelated::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
+            self::deleteCachePic($inputDatas['pic_name'], '|'); //从定时清理的缓存图片中移除上传成功的图片
         }
         if (isset($pastPic)) {
             $pastPicArr = explode('|', $pastPic);

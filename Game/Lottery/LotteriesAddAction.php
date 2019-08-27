@@ -3,7 +3,7 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
+use App\Lib\BaseCache;
 use App\Models\Admin\Homepage\FrontendLotteryRedirectBetList;
 use App\Models\DeveloperUsage\TaskScheduling\CronJob;
 use App\Models\Game\Lottery\LotteryIssueRule;
@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 
 class LotteriesAddAction
 {
+    use BaseCache;
+
     /**
      * 添加彩种
      * @param   BackEndApiMainController  $contll
@@ -56,7 +58,7 @@ class LotteriesAddAction
             }
         }
         DB::commit();
-        CacheRelated::deleteCachePic($inputDatas['lottery']['icon_name']); //从定时清理的缓存图片中移除上传成功的图片
+        self::deleteCachePic($inputDatas['lottery']['icon_name']); //从定时清理的缓存图片中移除上传成功的图片
         $lotteryEloq->lotteryInfoCache(); //更新首页lotteryInfo缓存
         LotteryList::updateAllLotteryByCache(); //更新所有彩票&玩法缓存
         FrontendLotteryRedirectBetList::updatePopularLotteriesCache(); //更新首页热门彩票缓存

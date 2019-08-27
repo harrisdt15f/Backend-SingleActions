@@ -3,13 +3,15 @@
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class ActivityInfosEditAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -68,7 +70,7 @@ class ActivityInfosEditAction
         if (isset($inputDatas['preview_pic'])) {
             $imageObj->deletePic(substr($pastPreviewPic, 1));
         }
-        $contll->deleteCache(); //删除前台首页缓存
+        self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }
 }

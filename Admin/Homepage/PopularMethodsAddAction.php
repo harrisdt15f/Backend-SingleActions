@@ -41,8 +41,6 @@ class PopularMethodsAddAction
         if ($popularLotteriesEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '', $popularLotteriesEloq->errors()->messages());
         }
-        //清除首页热门玩法缓存
-        $contll->deleteCache();
         return $contll->msgOut(true);
     }
 }

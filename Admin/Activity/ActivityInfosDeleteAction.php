@@ -3,6 +3,7 @@
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Exception;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class ActivityInfosDeleteAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -40,8 +43,7 @@ class ActivityInfosDeleteAction
             $imageObj = new ImageArrange();
             $imageObj->deletePic(substr($pastDataEloq->pic_path, 1));
             $imageObj->deletePic(substr($pastDataEloq->preview_pic_path, 1));
-            //删除前台首页缓存
-            $contll->deleteCache();
+            self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();

@@ -42,8 +42,6 @@ class HomepageUploadIcoAction
         try {
             $pastData->value = '/' . $ico['path'];
             $pastData->save();
-            //删除前台首页缓存
-            $contll->deleteCache($pastData->en_name);
             //删除原图
             if ($pastIco !== null) {
                 $imageObj->deletePic(substr($pastIco, 1));

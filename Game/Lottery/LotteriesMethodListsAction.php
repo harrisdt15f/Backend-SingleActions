@@ -3,15 +3,16 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\CacheRelated;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Carbon;
+use App\Lib\BaseCache;
 
 class LotteriesMethodListsAction
 {
+    use BaseCache;
+
     protected $model;
 
     /**
@@ -29,10 +30,9 @@ class LotteriesMethodListsAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $tags = $contll->tags;
         $redisKey = $contll->redisKey;
-        $data = CacheRelated::getTagsCache($tags, $redisKey);
-        if ($data === false) {
+        $data = self::getCacheData($redisKey);
+        if (empty($data)) {
             $seriesEloq = LotterySerie::get();
             foreach ($seriesEloq as $seriesIthem) {
                 $lottery = $seriesIthem->lotteries; //->where('status',1)
@@ -94,8 +94,7 @@ class LotteriesMethodListsAction
                     }
                 }
             }
-            $minuteToStore = 60 * 24;
-            CacheRelated::setTagsCache($tags, $redisKey, $data, $minuteToStore);
+            self::saveCacheData($redisKey, $data);
         }
         return $contll->msgOut(true, $data);
     }
