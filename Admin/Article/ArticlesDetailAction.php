@@ -28,7 +28,7 @@ class ArticlesDetailAction
         $field = 'sort';
         $type = 'asc';
         $searchAbleFields = ['title', 'type', 'search_text', 'is_for_agent'];
-        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $field, $type);
+        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, [], $field, $type);
         return $contll->msgOut(true, $datas);
     }
 }

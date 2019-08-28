@@ -21,10 +21,10 @@ class ConfiguresGetSysConfigureValueAction
     /**
      * 获取某个配置的值
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $sysConfiguresEloq = new $this->model;
         $time = $sysConfiguresEloq->getConfigValue($inputDatas['key']);

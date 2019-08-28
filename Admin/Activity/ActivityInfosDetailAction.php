@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Activity\ActivityInfosController;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Illuminate\Http\JsonResponse;
 
@@ -20,16 +20,17 @@ class ActivityInfosDetailAction
 
     /**
      * 活动列表
-     * @param  BackEndApiMainController  $contll
+     * @param  ActivityInfosController  $contll
+     * @param  array                    $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(ActivityInfosController $contll, array $inputDatas): JsonResponse
     {
+        $contll->inputs['type'] = $inputDatas['type'];
         $searchAbleFields = ['title', 'type', 'status', 'admin_name', 'is_time_interval'];
         $orderFields = 'sort';
         $orderFlow = 'asc';
-        $contll->type = $inputDatas['type'];
-        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
+        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, [], $orderFields, $orderFlow);
         return $contll->msgOut(true, $datas);
     }
 }

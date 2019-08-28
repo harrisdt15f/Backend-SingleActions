@@ -22,10 +22,10 @@ class ConfiguresEditAction
     /**
      * 修改配置
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $configureEloq = $this->model::find($inputDatas['id']);
         $contll->editAssignment($configureEloq, $inputDatas);

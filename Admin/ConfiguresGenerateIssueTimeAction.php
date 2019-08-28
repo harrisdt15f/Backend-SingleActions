@@ -26,10 +26,10 @@ class ConfiguresGenerateIssueTimeAction
     /**
      * 配置获取奖期时间
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::where('sign', $this->sign)->first();
         if ($pastDataEloq === null) {
@@ -44,11 +44,11 @@ class ConfiguresGenerateIssueTimeAction
 
     /**
      * 创建生成奖期时间的配置
-     * @param  $contll
-     * @param  date $time
+     * @param  BackEndApiMainController $contll
+     * @param  string                   $time
      * @return bool
      */
-    public function createIssueConfigure($contll, $time): bool
+    public function createIssueConfigure(BackEndApiMainController $contll, string $time): bool
     {
         DB::beginTransaction();
         try {
