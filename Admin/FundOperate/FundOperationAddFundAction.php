@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\FundOperate;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\FundOperate\FundOperationController;
 use App\Lib\Common\FundOperation;
 use App\Models\Admin\BackendAdminUser;
 use App\Models\Admin\Fund\BackendAdminRechargePocessAmount;
@@ -16,11 +16,11 @@ class FundOperationAddFundAction
 {
     /**
      * 给管理员添加人工充值额度
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  FundOperationController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(FundOperationController $contll, array $inputDatas): JsonResponse
     {
         $adminDataEloq = BackendAdminUser::find($inputDatas['id']);
         $fundOperationAdmin = BackendAdminRechargePocessAmount::where('admin_id', $inputDatas['id'])->first();
@@ -59,9 +59,7 @@ class FundOperationAddFundAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollBack();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

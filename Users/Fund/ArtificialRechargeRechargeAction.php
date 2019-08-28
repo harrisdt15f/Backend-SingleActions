@@ -29,13 +29,14 @@ class ArtificialRechargeRechargeAction
     /**
      * 给用户人工充值
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         $partnerAdmin = $contll->partnerAdmin;
+        $userEloq = FrontendUser::find($inputDatas['id']);
         try {
             //普通管理员人工充值需要审核的操作
             if ($contll->currentPartnerAccessGroup->role !== '*') {
@@ -69,14 +70,13 @@ class ArtificialRechargeRechargeAction
                 $UserAccountsEdit = ['balance' => $balance];
                 $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)->where('updated_at', $UserAccounts->updated_at)->update($UserAccountsEdit);
                 //充值失败回滚
-                if ($editStatus === 0) {
+                if ($editStatus == 0) {
                     DB::rollBack();
                     return $contll->msgOut(false, [], '101102');
                 }
                 //用户帐变表
                 $accountChangeReportEloq = new FrontendUsersAccountsReport();
                 $accountChangeObj = new AccountChange();
-                $userEloq = FrontendUser::find($inputDatas['id']);
                 $accountChangeObj->addData($accountChangeReportEloq, $userEloq->toArray(), $inputDatas['amount'], $UserAccounts->balance, $balance, $accountChangeTypeEloq);
             }
             //添加人工充值明细表
@@ -92,9 +92,7 @@ class ArtificialRechargeRechargeAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollBack();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 
@@ -143,7 +141,8 @@ class ArtificialRechargeRechargeAction
         //获取有人工充值权限的管理员
         $admins = BackendAdminUser::select('id', 'group_id')->whereIn('group_id', $groupIds)->get();
         if ($admins !== null) {
-            $messageObj->insertMessage($type, $contll->message, $admins->toArray());
+            $message = '有新的人工充值需要审核';
+            $messageObj->insertMessage($type, $message, $admins->toArray());
         }
     }
 
@@ -169,7 +168,7 @@ class ArtificialRechargeRechargeAction
 
     /**
      * 插入users_recharge_histories表
-     * @param  objact  $userEloq       [用户eloq]
+     * @param  object  $userEloq       [用户eloq]
      * @param  int     $auditFlowID    [backend_admin_audit_flow_lists审核表id]
      * @param  int     $deposit_mode   [充值模式 0自动 1手动]
      * @param  int     $amount         [金额]
@@ -249,7 +248,7 @@ class ArtificialRechargeRechargeAction
      */
     public function createOrder(): string
     {
-        return 'XWP'.Str::orderedUuid()->getNodeHex();
+        return 'XWP' . Str::orderedUuid()->getNodeHex();
     }
 
     /**

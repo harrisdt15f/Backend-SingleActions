@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Homepage\HomepageBannerController;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Homepage\FrontendPageBanner;
 use Exception;
@@ -23,11 +23,11 @@ class HomepageBannerAddAction
 
     /**
      * 添加首页轮播图
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  HomepageBannerController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(HomepageBannerController $contll, array $inputDatas): JsonResponse
     {
         $imageObj = new ImageArrange();
         $folderName = $contll->folderName;
@@ -57,9 +57,7 @@ class HomepageBannerAddAction
             $contll->deleteCache($addData['flag']);
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

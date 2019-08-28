@@ -26,10 +26,10 @@ class UserHandleCreateUserAction
     /**
      *创建总代与用户后台管理员操作
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $inputDatas['password'] = bcrypt($inputDatas['password']);
         $inputDatas['fund_password'] = bcrypt($inputDatas['fund_password']);
@@ -59,9 +59,7 @@ class UserHandleCreateUserAction
             return $contll->msgOut(true, $data);
         } catch (Exception $e) {
             DB::rollBack();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
 //        $success['token'] = $user->createToken('前端')->accessToken;
     }

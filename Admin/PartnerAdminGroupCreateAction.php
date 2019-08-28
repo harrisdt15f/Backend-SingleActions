@@ -27,10 +27,10 @@ class PartnerAdminGroupCreateAction
     /**
      * Show the form for creating a new resource.
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -58,9 +58,7 @@ class PartnerAdminGroupCreateAction
             DB::commit();
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
         $partnerMenuObj = new BackendSystemMenu();
         $partnerMenuObj->createMenuDatas($objPartnerAdminGroup->id, $role);

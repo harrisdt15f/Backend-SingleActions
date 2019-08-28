@@ -23,9 +23,10 @@ class ArticlesTopAction
     /**
      * 文章置顶
      * @param  BackEndApiMainController  $contll
+     * @param  array  $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $topData = $this->model::find($inputDatas['id']);
         DB::beginTransaction();
@@ -37,9 +38,7 @@ class ArticlesTopAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Activity\ActivityInfosController;
 use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
@@ -26,11 +26,11 @@ class ActivityInfosDeleteAction
 
     /**
      * 删除活动
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  ActivityInfosController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(ActivityInfosController $contll, array $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
         DB::beginTransaction();
@@ -47,9 +47,7 @@ class ActivityInfosDeleteAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

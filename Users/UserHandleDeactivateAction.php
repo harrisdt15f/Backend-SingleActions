@@ -5,6 +5,7 @@ namespace App\Http\SingleActions\Backend\Users;
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\FrontendUsersPrivacyFlow;
 use App\Models\User\FrontendUser;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -24,10 +25,10 @@ class UserHandleDeactivateAction
     /**
      * 用户冻结账号功能
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $userEloq = $this->model::find($inputDatas['user_id']);
         if ($userEloq !== null) {
@@ -49,9 +50,7 @@ class UserHandleDeactivateAction
                 return $contll->msgOut(true);
             } catch (Exception $e) {
                 DB::rollBack();
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
             }
         }
     }

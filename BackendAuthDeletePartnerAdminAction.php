@@ -4,6 +4,7 @@ namespace App\Http\SingleActions\Backend;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminUser;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
 use Tymon\JWTAuth\Exceptions\JWTException;
@@ -24,10 +25,10 @@ class BackendAuthDeletePartnerAdminAction
     /**
      * 删除管理员
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $targetUserEloq = $this->model::where([
             ['id', '=', $inputDatas['id']],
@@ -46,9 +47,7 @@ class BackendAuthDeletePartnerAdminAction
                 $targetUserEloq->delete();
                 return $contll->msgOut(true);
             } catch (Exception $e) {
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
             }
         } else {
             return $contll->msgOut(false, [], '100004');

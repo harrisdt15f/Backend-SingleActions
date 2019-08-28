@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Users\Fund\RechargeCheckController;
 use App\Lib\Common\FundOperation;
 use App\Models\Admin\Fund\BackendAdminRechargePocessAmount;
 use App\Models\BackendAdminAuditFlowList;
@@ -26,11 +26,11 @@ class RechargeCheckAuditFailureAction
 
     /**
      * 审核驳回
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  RechargeCheckController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(RechargeCheckController $contll, array $inputDatas): JsonResponse
     {
         $rechargeLog = $this->model::find($inputDatas['id']);
         if ($rechargeLog->status !== 0) {
@@ -82,9 +82,7 @@ class RechargeCheckAuditFailureAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollBack();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

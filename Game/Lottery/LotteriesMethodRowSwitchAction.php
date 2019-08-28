@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use Exception;
@@ -12,11 +12,11 @@ class LotteriesMethodRowSwitchAction
 {
     /**
      * 玩法行开关
-     * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   LotteriesController  $contll
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(LotteriesController $contll, array $inputDatas): JsonResponse
     {
         $methodGroupIds = LotteryMethod::where([
             ['lottery_id', $inputDatas['lottery_id']],
@@ -33,9 +33,7 @@ class LotteriesMethodRowSwitchAction
             LotteryList::lotteryInfoCache(); //更新首页lotteryInfo缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

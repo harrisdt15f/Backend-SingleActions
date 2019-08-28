@@ -6,6 +6,7 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\BackendAdminAuditPasswordsList;
 use App\Models\BackendAdminAuditFlowList;
 use App\Models\User\FrontendUser;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -15,11 +16,11 @@ class UserHandleCommonHandleUserPasswordAction
     /**
      * 申请资金密码跟密码共用功能
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
-     * @param  $type
+     * @param  array $inputDatas
+     * @param  int $type
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas, $type): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas, int $type): JsonResponse
     {
         $applyUserEloq = FrontendUser::find($inputDatas['id']);
         if ($applyUserEloq !== null) {
@@ -32,6 +33,7 @@ class UserHandleCommonHandleUserPasswordAction
                 ['type', '=', $type],
             ])->exists();
             if ($adminApplyCheck === true) {
+                $code = '';
                 if ($type === 1) {
                     $code = '100100';
                 } else {
@@ -65,9 +67,7 @@ class UserHandleCommonHandleUserPasswordAction
                 return $contll->msgOut(true);
             } catch (Exception $e) {
                 DB::rollBack();
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
             }
         } else {
             return $contll->msgOut(false, [], '100004');
