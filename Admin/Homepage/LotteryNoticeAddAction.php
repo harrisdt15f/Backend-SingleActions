@@ -11,10 +11,10 @@ class LotteryNoticeAddAction
     /**
      * 添加开奖公告的彩种
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array                     $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $maxSort = FrontendLotteryNoticeList::select('sort')->max('sort');
         $sort = ++$maxSort;

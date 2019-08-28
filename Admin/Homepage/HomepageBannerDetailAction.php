@@ -21,10 +21,10 @@ class HomepageBannerDetailAction
     /**
      * 首页轮播图列表
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $data = $this->model::where('flag', $inputDatas['flag'])->orderBy('sort', 'asc')->get()->toArray();
         return $contll->msgOut(true, $data);

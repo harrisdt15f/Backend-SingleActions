@@ -22,10 +22,10 @@ class PopularMethodsAddAction
     /**
      * 热门彩票二 添加热门彩票
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         //sort
         $maxSort = $this->model::select('sort')->max('sort');

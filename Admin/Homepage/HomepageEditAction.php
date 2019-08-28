@@ -21,10 +21,10 @@ class HomepageEditAction
     /**
      * 编辑首页模块
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastData = $this->model::find($inputDatas['id']);
         if (isset($inputDatas['status'])) {

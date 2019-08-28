@@ -15,7 +15,11 @@ class HomepageBannerPicStandardAction
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $standard = FrontendSystemAdsType::select('l_size', 'w_size', 'size')->where('type', 1)->first()->toArray();
-        return $contll->msgOut(true, $standard);
+        $standard = FrontendSystemAdsType::select('l_size', 'w_size', 'size')->where('type', 1)->first();
+        $data = [];
+        if ($standard !== null) {
+            $data = $standard->toArray();
+        }
+        return $contll->msgOut(true, $data);
     }
 }

@@ -21,10 +21,10 @@ class PopularLotteriesEditAction
     /**
      * 编辑热门彩票
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
         $pastDataEloq->lotteries_sign = $inputDatas['lotteries_sign'];
