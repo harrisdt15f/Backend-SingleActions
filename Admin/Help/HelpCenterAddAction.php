@@ -25,10 +25,10 @@ class HelpCenterAddAction
     /**
      * 添加
      * @param  BackEndApiMainController  $contll
-     * @param  $input
+     * @param  array                     $input
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $input): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $input): JsonResponse
     {
         $this->model->fill($input);
         $this->model->save();

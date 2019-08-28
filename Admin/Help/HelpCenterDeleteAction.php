@@ -25,10 +25,10 @@ class HelpCenterDeleteAction
     /**
      * 删除
      * @param  BackEndApiMainController  $contll
-     * @param  $input
+     * @param  array                     $input
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $input): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $input): JsonResponse
     {
         $this->model::find($input['id'])->delete();
         if ($this->model->errors()->messages()) {

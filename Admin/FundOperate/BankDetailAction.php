@@ -33,7 +33,7 @@ class BankDetailAction
             $searchAbleFields,
             0,
             null,
-            null,
+            [],
             $orderFields,
             $orderFlow
         );
