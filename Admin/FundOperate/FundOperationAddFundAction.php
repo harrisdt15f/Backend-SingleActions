@@ -42,7 +42,7 @@ class FundOperationAddFundAction
             $type = BackendAdminRechargehumanLog::SUPERADMIN;
             $in_out = BackendAdminRechargehumanLog::INCREMENT;
             $rechargeLog = new BackendAdminRechargehumanLog();
-            $comment = '[人工充值额度操作]==>+' . (float) $inputDatas['fund'] . '|[目前额度]==>' . $newFund;
+            $comment = '[人工充值额度操作]==>+' . $inputDatas['fund'] . '|[目前额度]==>' . $newFund;
             $fundOperationObj->insertOperationDatas(
                 $rechargeLog,
                 $type,

@@ -27,10 +27,10 @@ class NoticeAddAction
     /**
      * 添加 公告|站内信
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $noticesContentData = $inputDatas;
         $noticesContentData['operate_admin_id'] = $contll->partnerAdmin->id;

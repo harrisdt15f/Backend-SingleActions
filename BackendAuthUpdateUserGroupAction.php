@@ -21,10 +21,10 @@ class BackendAuthUpdateUserGroupAction
     /**
      * 修改管理员的归属组
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $targetUserEloq = $this->model::find($inputDatas['id']);
         if ($targetUserEloq !== null) {

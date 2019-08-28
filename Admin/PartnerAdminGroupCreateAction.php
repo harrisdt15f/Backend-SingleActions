@@ -38,22 +38,24 @@ class PartnerAdminGroupCreateAction
             $data['group_name'] = $inputDatas['group_name'];
             $data['role'] = $inputDatas['role'];
             $role = $inputDatas['role'] == '*' ?
-                Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'], true));
+            Arr::wrap($inputDatas['role']) : Arr::wrap(json_decode($inputDatas['role'], true));
             $objPartnerAdminGroup = new $this->model;
             $objPartnerAdminGroup->fill($data);
             $objPartnerAdminGroup->save();
             //检查是否有人工充值权限
             $fundOperationCriteriaEloq = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first();
-            $isManualRecharge = in_array($fundOperationCriteriaEloq['id'], $role);
-            //如果有人工充值权限   添加 backend_admin_recharge_permit_groups 表
-            if ($isManualRecharge === true) {
-                $fundOperationGroup = new BackendAdminRechargePermitGroup();
-                $fundOperationData = [
-                    'group_id' => $objPartnerAdminGroup->id,
-                    'group_name' => $objPartnerAdminGroup->group_name,
-                ];
-                $fundOperationGroup->fill($fundOperationData);
-                $fundOperationGroup->save();
+            if ($fundOperationCriteriaEloq !== null) {
+                $isManualRecharge = in_array($fundOperationCriteriaEloq['id'], $role);
+                //如果有人工充值权限   添加 backend_admin_recharge_permit_groups 表
+                if ($isManualRecharge === true) {
+                    $fundOperationGroup = new BackendAdminRechargePermitGroup();
+                    $fundOperationData = [
+                        'group_id' => $objPartnerAdminGroup->id,
+                        'group_name' => $objPartnerAdminGroup->group_name,
+                    ];
+                    $fundOperationGroup->fill($fundOperationData);
+                    $fundOperationGroup->save();
+                }
             }
             DB::commit();
         } catch (Exception $e) {

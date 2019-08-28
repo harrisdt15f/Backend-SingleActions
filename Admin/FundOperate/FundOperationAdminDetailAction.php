@@ -39,7 +39,9 @@ class FundOperationAdminDetailAction
         );
         $sysConfiguresEloq = SystemConfiguration::where('sign', 'admin_recharge_daily_limit')->first();
         $finalData['admin_user'] = $data;
-        $finalData['dailyFundLimit'] = (string) $sysConfiguresEloq->value;
+        if ($sysConfiguresEloq !== null) {
+            $finalData['dailyFundLimit'] = $sysConfiguresEloq->value;
+        }
         return $contll->msgOut(true, $finalData);
     }
 }

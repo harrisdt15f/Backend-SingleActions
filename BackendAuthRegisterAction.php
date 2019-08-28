@@ -16,25 +16,26 @@ class BackendAuthRegisterAction
     /**
      * Register api
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $group = BackendAdminAccessGroup::find($inputDatas['group_id']);
         $role = $group->role == '*' ? Arr::wrap($group->role) : Arr::wrap(json_decode($group->role, true));
-        $isManualRecharge = false;
-        $fundOperation = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first()->toArray();
-        $isManualRecharge = in_array($fundOperation['id'], $role, true);
         $input = $inputDatas;
         $input['password'] = bcrypt($input['password']);
         $input['platform_id'] = $contll->currentPlatformEloq->platform_id;
         $user = BackendAdminUser::create($input);
-        if ($isManualRecharge === true) {
-            $insertData = ['admin_id' => $user->id];
-            $fundOperationEloq = new BackendAdminRechargePocessAmount();
-            $fundOperationEloq->fill($insertData);
-            $fundOperationEloq->save();
+        $fundOperation = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first();
+        if ($fundOperation !== null) {
+            $isManualRecharge = in_array($fundOperation['id'], $role, true);
+            if ($isManualRecharge === true) {
+                $insertData = ['admin_id' => $user->id];
+                $fundOperationEloq = new BackendAdminRechargePocessAmount();
+                $fundOperationEloq->fill($insertData);
+                $fundOperationEloq->save();
+            }
         }
         $credentials = request(['email', 'password']);
         $token = $contll->currentAuth->attempt($credentials);

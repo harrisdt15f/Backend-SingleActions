@@ -3,6 +3,7 @@
 namespace App\Http\SingleActions\Backend;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Arr;
 
