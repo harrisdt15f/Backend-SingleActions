@@ -2,17 +2,17 @@
 
 namespace App\Http\SingleActions\Backend\Users;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Users\UserHandleController;
 use Illuminate\Http\JsonResponse;
 
 class UserHandleCommonAppliedPasswordHandleAction
 {
     /**
      * 用户登录密码和资金密码公用列表
-     * @param  BackEndApiMainController  $contll
+     * @param  UserHandleController  $contll
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(UserHandleController $contll): JsonResponse
     {
         //main model
         $eloqM = $contll->modelWithNameSpace($contll->withNameSpace);

@@ -27,6 +27,9 @@ class UserHandleCommonAuditPasswordAction
             $auditFlowEloq = $applyUserEloq->auditFlow;
             //handle User
             $user = FrontendUser::find($applyUserEloq->user_id);
+            if ($user === null) {
+                return $contll->msgOut(false, [], '100111');
+            }
             if ($applyUserEloq->type == 1) {
                 $user->password = $applyUserEloq->audit_data;
             } else {

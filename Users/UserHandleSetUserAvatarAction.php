@@ -21,10 +21,10 @@ class UserHandleSetUserAvatarAction
     /**
      * 设定用户头像表
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $avatarPic = UserPublicAvatar::getAvatar($inputDatas['avatar_id']);
 

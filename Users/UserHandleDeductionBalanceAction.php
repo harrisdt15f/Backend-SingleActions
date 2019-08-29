@@ -40,6 +40,9 @@ class UserHandleDeductionBalanceAction
             return $contll->msgOut(false, [], '100103');
         }
         $userAccountsEloq = FrontendUsersAccount::where('user_id', $inputDatas['user_id'])->first();
+        if ($userAccountsEloq === null) {
+            return $contll->msgOut(false, [], '100112');
+        }
         if ($userAccountsEloq->balance < $inputDatas['amount']) {
             return $contll->msgOut(false, [], '100104');
         }

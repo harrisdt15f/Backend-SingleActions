@@ -20,13 +20,12 @@ class UserHandlePublicAvatarAction
     /**
      * 获取公共头像列表
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
      * @return JsonResponse
      */
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $searchAbleFields = ['id', 'pic_path', 'created_at'];
-        $data = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null);
+        $data = $contll->generateSearchQuery($this->model, $searchAbleFields);
         return $contll->msgOut(true, $data);
     }
 }
