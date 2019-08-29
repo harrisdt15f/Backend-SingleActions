@@ -29,7 +29,7 @@ class ReportManagementUserBetsAction
         ];
         $field = 'id';
         $type = 'desc';
-        $datas = $contll->generateSearchQuery($projectEloq, $searchAbleFields, 0, null, null, $field, $type);
+        $datas = $contll->generateSearchQuery($projectEloq, $searchAbleFields, 0, null, [], $field, $type);
         return $contll->msgOut(true, $datas);
     }
 }

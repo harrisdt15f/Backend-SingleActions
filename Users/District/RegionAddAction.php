@@ -21,10 +21,10 @@ class RegionAddAction
     /**
      * 添加行政区
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $isExist = $this->model::where([
             'region_parent_id' => $inputDatas['region_parent_id'],

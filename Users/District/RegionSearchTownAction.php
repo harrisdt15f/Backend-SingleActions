@@ -21,10 +21,10 @@ class RegionSearchTownAction
     /**
      * 模糊搜索 镇(街道)
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $datas = $this->model::select(
             'a.*',

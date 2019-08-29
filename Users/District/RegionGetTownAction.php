@@ -21,10 +21,10 @@ class RegionGetTownAction
     /**
      * 获取 镇(街道) 列表
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $isExist = $this->model::where([
             'region_level' => $inputDatas['region_level'],

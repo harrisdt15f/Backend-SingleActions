@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use Illuminate\Http\JsonResponse;
@@ -11,11 +11,11 @@ class LotteriesMethodSwitchAction
 {
     /**
      * 玩法开关
-     * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   LotteriesController  $contll
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(LotteriesController $contll, array $inputDatas): JsonResponse
     {
         $lotteryMethodEloq = LotteryMethod::find($inputDatas['id']);
         $lotteryMethodEloq->status = $inputDatas['status'];
