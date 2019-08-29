@@ -2,11 +2,12 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
 use App\Models\Game\Lottery\LotteryIssue;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
 
@@ -24,16 +25,17 @@ class LotteriesIssueListsAction
 
     /**
      * 获取奖期列表接口。
-     * @param   BackEndApiMainController  $contll
+     * @param   LotteriesController  $contll
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(LotteriesController $contll): JsonResponse
     {
         $seriesId = $contll->inputs['series_id'] ?? '';
 //        {"method":"whereIn","key":"id","value":["cqssc","xjssc","hljssc","zx1fc","txffc"]}
         //        $extraWhereConditions = Arr::wrap(json_decode($this->inputs['extra_where'], true));
         if (!empty($seriesId)) {
             $lotteryEnNames = $this->model::where('series_id', $seriesId)->get(['en_name']);
+            $tempLotteryId = [];
             foreach ($lotteryEnNames as $lotteryIthems) {
                 $tempLotteryId[] = $lotteryIthems->en_name;
             }
@@ -69,7 +71,7 @@ class LotteriesIssueListsAction
             $searchAbleFields,
             $fixedJoin,
             $withTable,
-            null,
+            [],
             $orderFields,
             $orderFlow
         );
@@ -79,10 +81,10 @@ class LotteriesIssueListsAction
 
     /**
      * 插入开奖号码例子
-     * @param  $issues
+     * @param  LengthAwarePaginator $issues
      * @return void
      */
-    public function insertCodeExample($issues): void
+    public function insertCodeExample(LengthAwarePaginator $issues): void
     {
         $serieList = LotterySerie::getList();
         foreach ($issues as $issueItem) {

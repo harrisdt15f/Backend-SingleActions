@@ -21,10 +21,10 @@ class MethodLevelEditAction
     /**
      * 编辑玩法等级
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $methodLevelEloq = $this->model::find($inputDatas['id']);
         //检查玩法等级

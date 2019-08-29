@@ -21,10 +21,10 @@ class MethodLevelDeleteAction
     /**
      * 删除玩法等级
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $methodLevelEloq = $this->model::find($inputDatas['id']);
         $methodLevelEloq->delete();

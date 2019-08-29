@@ -11,10 +11,10 @@ class LotteriesEditMethodAction
     /**
      * 编辑玩法
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $lotteryMethodEloq = LotteryMethod::find($inputDatas['id']);
         $lotteryMethodEloq->total = $inputDatas['total'];

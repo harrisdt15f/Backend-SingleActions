@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use App\Models\Game\Lottery\LotterySerie;
@@ -25,10 +25,10 @@ class LotteriesMethodListsAction
 
     /**
      * 获取玩法结果。
-     * @param   BackEndApiMainController  $contll
+     * @param   LotteriesController  $contll
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(LotteriesController $contll): JsonResponse
     {
         $redisKey = $contll->redisKey;
         $data = self::getTagsCacheData($redisKey);

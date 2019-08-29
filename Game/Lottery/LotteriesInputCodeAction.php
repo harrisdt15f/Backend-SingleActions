@@ -12,10 +12,10 @@ class LotteriesInputCodeAction
     /**
      * 奖期录号
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $issueEloq = LotteryIssue::where([
             ['issue', $inputDatas['issue']],
