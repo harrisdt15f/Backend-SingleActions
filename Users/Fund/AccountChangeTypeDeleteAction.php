@@ -21,10 +21,10 @@ class AccountChangeTypeDeleteAction
     /**
      * 删除帐变类型
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $accountsType = $this->model::find($inputDatas['id']);
         $accountsType->delete();

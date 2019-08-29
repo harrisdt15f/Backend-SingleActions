@@ -21,10 +21,10 @@ class AccountChangeTypeFieldModAction
     /**
      * 帐变类型字段修改
      * @param  BackEndApiMainController $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $typeField = $this->model->find($inputDatas['id']);
         if (is_null($typeField)) {

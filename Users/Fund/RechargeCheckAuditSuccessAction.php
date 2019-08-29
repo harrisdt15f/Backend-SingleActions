@@ -57,15 +57,24 @@ class RechargeCheckAuditSuccessAction
             $rechargeLog->save();
             // 修改 users_recharge_histories 表 的审核状态
             $historyEloq = UsersRechargeHistorie::where('audit_flow_id', $rechargeLog->audit_flow_id)->first();
+            if ($historyEloq === null) {
+                return $contll->msgOut(false, [], '100904');
+            }
             $historyEdit = ['status' => $historyEloq::AUDITSUCCESS];
             $historyEloq->fill($historyEdit);
             $historyEloq->save();
             //修改backend_admin_audit_flow_lists审核表
             $userData = FrontendUser::where('id', $rechargeLog->user_id)->with('account')->first();
+            if ($userData === null) {
+                return $contll->msgOut(false, [], '100904');
+            }
             $balance = $userData->account->balance + $rechargeLog->amount;
             $contll->auditFlowEdit($auditFlow, $contll->partnerAdmin, $inputDatas['auditor_note']);
             //修改用户金额
             $UserAccounts = FrontendUsersAccount::where('user_id', $rechargeLog->user_id)->first();
+            if ($UserAccounts === null) {
+                return $contll->msgOut(false, [], '100904');
+            }
             $UserAccountsEdit = ['balance' => $balance];
             $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)
                 ->where('updated_at', $UserAccounts->updated_at)

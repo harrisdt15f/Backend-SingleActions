@@ -22,10 +22,10 @@ class AccountChangeTypeAddAction
     /**
      * 添加帐变类型
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $param = implode(',', $inputDatas['param']);
         $addData = $inputDatas;

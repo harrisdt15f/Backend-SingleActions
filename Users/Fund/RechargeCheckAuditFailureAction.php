@@ -40,29 +40,38 @@ class RechargeCheckAuditFailureAction
         if ($adminFundData === null) {
             return $contll->msgOut(false, [], '100903');
         }
-        $newFund = $adminFundData->fund + $rechargeLog->amount;
+        $newFund = (float) ($adminFundData->fund + $rechargeLog->amount);
         DB::beginTransaction();
         try {
             // 修改 backend_admin_rechargehuman_logs 表 的审核状态
             $rechargeLogEdit = ['status' => $rechargeLog::AUDITFAILURE];
             $rechargeLog->fill($rechargeLogEdit);
             $rechargeLog->save();
+
             // 修改 users_recharge_histories 表 的审核状态
             $historyEloq = UsersRechargeHistorie::where('audit_flow_id', $rechargeLog->audit_flow_id)->first();
+            if ($historyEloq === null) {
+                return $contll->msgOut(false, [], '100904');
+            }
             $historyEdit = ['status' => $historyEloq::AUDITFAILURE];
             $historyEloq->fill($historyEdit);
             $historyEloq->save();
+
             //退还管理员人工充值额度
             $auditFlow = BackendAdminAuditFlowList::where('id', $rechargeLog->audit_flow_id)->first();
+            if ($auditFlow === null) {
+                return $contll->msgOut(false, [], '100904');
+            }
             $adminFundDataEdit = ['fund' => $newFund];
             $contll->auditFlowEdit($auditFlow, $contll->partnerAdmin, $inputDatas['auditor_note']);
             $adminFundData->fill($adminFundDataEdit);
             $adminFundData->save();
+
             //返还额度后  backend_admin_rechargehuman_logs 记录表
             $rechargeLogeloqM = new $this->model;
             $type = $rechargeLogeloqM::SYSTEM;
             $in_out = $rechargeLogeloqM::INCREMENT;
-            $comment = '[充值审核失败额度返还]==>+' . $rechargeLog['amount'] . '|[目前额度]==>' . $newFund;
+            $comment = '[充值审核失败额度返还]==>+' . (float) $rechargeLog['amount'] . '|[目前额度]==>' . $newFund;
             $fundOperationObj = new FundOperation();
             $fundOperationObj->insertOperationDatas(
                 $rechargeLogeloqM,
