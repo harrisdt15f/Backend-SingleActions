@@ -21,10 +21,10 @@ class FrontendAppRouteAddAction
     /**
      * 添加APP路由
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $routeEloq = new $this->model;
         $routeEloq->fill($inputDatas);

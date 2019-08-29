@@ -11,10 +11,10 @@ class MenuAllRequireInfosAction
 {
     /**
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $routeCollection = Route::getRoutes()->get();
         $routeInfo = [];

@@ -22,10 +22,10 @@ class RouteIsOpenAction
     /**
      * 路由开放接口
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $routeEloq = $this->model::find($inputDatas['id']);
         $routeEloq->is_open = $inputDatas['is_open'];

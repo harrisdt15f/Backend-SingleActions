@@ -21,10 +21,10 @@ class FrontendAllocatedModelDetailAction
     /**
      * 前端模块列表
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $eloqM = new $this->model;
         $allFrontendModel = $eloqM->allFrontendModel($inputDatas['type']);

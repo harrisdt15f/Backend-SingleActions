@@ -21,10 +21,10 @@ class FrontendAllocatedModelAddAction
     /**
      * 添加前端模块
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         if ($inputDatas['pid'] != 0) {
             $checkParentLevel = $this->model::where('id', $inputDatas['pid'])->first();
