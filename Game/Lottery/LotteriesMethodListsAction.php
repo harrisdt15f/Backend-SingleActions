@@ -3,11 +3,11 @@
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
 use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
+use App\Lib\BaseCache;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
-use App\Lib\BaseCache;
 
 class LotteriesMethodListsAction
 {
@@ -42,8 +42,8 @@ class LotteriesMethodListsAction
                         ->only(['id', 'cn_name', 'status']);
 //                    $methodEloq = $litems->gameMethods;
                     $currentLotteryId = $litems->en_name;
-                    $method[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
-                    $method[$seriesId][$currentLotteryId]['child'] = [];
+                    $data[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
+                    $data[$seriesId][$currentLotteryId]['child'] = [];
                     //#########################################################
                     $methodGrops = $litems->methodGroups;
                     foreach ($methodGrops as $mgItems) {
