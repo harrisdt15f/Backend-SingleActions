@@ -34,6 +34,7 @@ class ArtificialRechargeRechargeAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
+        $amount = (float) $inputDatas['amount'];
         DB::beginTransaction();
         $partnerAdmin = $contll->partnerAdmin;
         $userEloq = FrontendUser::find($inputDatas['id']);
@@ -48,10 +49,10 @@ class ArtificialRechargeRechargeAction
                     }
                     $adminOperationFund = $adminFundData->fund;
                     //可操作额度小于充值额度
-                    if ($adminOperationFund < $inputDatas['amount']) {
+                    if ($adminOperationFund < $amount) {
                         return $contll->msgOut(false, [], '101101');
                     }
-                    $newFund = $adminOperationFund - $inputDatas['amount'];
+                    $newFund = $adminOperationFund - $amount;
                     $adminFundEdit = ['fund' => $newFund];
                     $adminFundData->fill($adminFundEdit);
                     $adminFundData->save();
@@ -67,26 +68,29 @@ class ArtificialRechargeRechargeAction
                     }
                     //修改用户金额
                     $UserAccounts = FrontendUsersAccount::where('user_id', $inputDatas['id'])->first();
-                    $balance = (float) $UserAccounts->balance + $inputDatas['amount'];
+                    if ($UserAccounts === null) {
+                        return $contll->msgOut(false, [], '100906');
+                    }
+                    $balance = $UserAccounts->balance + $amount;
                     $UserAccountsEdit = ['balance' => $balance];
-                    $editStatus = FrontendUsersAccount::where('user_id', (string) $UserAccounts->user_id)->where('updated_at', (string) $UserAccounts->updated_at)->update($UserAccountsEdit);
+                    $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)->where('updated_at', $UserAccounts->updated_at)->update($UserAccountsEdit);
                     //充值失败回滚
-                    if ($editStatus == 0) {
+                    if ($editStatus === false) {
                         DB::rollBack();
                         return $contll->msgOut(false, [], '101102');
                     }
                     //用户帐变表
                     $accountChangeReportEloq = new FrontendUsersAccountsReport();
                     $accountChangeObj = new AccountChange();
-                    $accountChangeObj->addData($accountChangeReportEloq, $userEloq->toArray(), $inputDatas['amount'], (float) $UserAccounts->balance, $balance, $accountChangeTypeEloq);
+                    $accountChangeObj->addData($accountChangeReportEloq, $userEloq->toArray(), $amount, (float) $UserAccounts->balance, $balance, $accountChangeTypeEloq);
                 }
                 //添加人工充值明细表
                 $auditFlowID = $auditFlowID ?? null;
                 $newFund = $newFund ?? null;
-                $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $inputDatas['amount'], $newFund, $contll->currentPartnerAccessGroup->role);
+                $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $contll->currentPartnerAccessGroup->role);
                 //用户 users_recharge_histories 表
                 $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
-                $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $inputDatas['amount'], $contll->currentPartnerAccessGroup->role);
+                $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $contll->currentPartnerAccessGroup->role);
                 // 用户 users_recharge_logs 表
                 $this->insertRechargeLog($companyOrderNum, $deposit_mode, $contll->log_uuid);
                 DB::commit();
@@ -152,11 +156,11 @@ class ArtificialRechargeRechargeAction
 
     /**
      * 插入充值额度记录
-     * @param  object $partnerAdmin  [管理员eloq]
-     * @param  object $userEloq      [用户eloq]
-     * @param  mixed    $auditFlowID   [backend_admin_audit_flow_lists审核表id]
-     * @param  int    $amount        [变动的额度]
-     * @param  int    $newFund       [变动后的额度]
+     * @param  object $partnerAdmin [管理员eloq]
+     * @param  object $userEloq [用户eloq]
+     * @param  mixed $auditFlowID [backend_admin_audit_flow_lists审核表id]
+     * @param  float $amount [变动的额度]
+     * @param  mixed $newFund [变动后的额度]
      * @param  string $role
      * @return void
      */
@@ -175,7 +179,7 @@ class ArtificialRechargeRechargeAction
      * @param  object  $userEloq       [用户eloq]
      * @param  mixed   $auditFlowID    [backend_admin_audit_flow_lists审核表id]
      * @param  int     $deposit_mode   [充值模式 0自动 1手动]
-     * @param  int     $amount         [金额]
+     * @param  float   $amount         [金额]
      * @param  string  $role
      * @return string
      */

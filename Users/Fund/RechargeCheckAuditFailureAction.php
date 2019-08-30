@@ -33,14 +33,18 @@ class RechargeCheckAuditFailureAction
     public function execute(RechargeCheckController $contll, array $inputDatas): JsonResponse
     {
         $rechargeLog = $this->model::find($inputDatas['id']);
+        if ($rechargeLog === null) {
+            return $contll->msgOut(false, [], '100905');
+        }
         if ($rechargeLog->status !== 0) {
             return $contll->msgOut(false, [], '100900');
         }
+        $amount = $rechargeLog->amount;
         $adminFundData = BackendAdminRechargePocessAmount::where('admin_id', $rechargeLog->admin_id)->first();
         if ($adminFundData === null) {
             return $contll->msgOut(false, [], '100903');
         }
-        $newFund = (float) ($adminFundData->fund + $rechargeLog->amount);
+        $newFund = $adminFundData->fund + $amount;
         DB::beginTransaction();
         try {
             // 修改 backend_admin_rechargehuman_logs 表 的审核状态
@@ -68,20 +72,19 @@ class RechargeCheckAuditFailureAction
             $adminFundData->save();
 
             //返还额度后  backend_admin_rechargehuman_logs 记录表
-            $rechargeLogeloqM = new $this->model;
-            $type = $rechargeLogeloqM::SYSTEM;
-            $in_out = $rechargeLogeloqM::INCREMENT;
-            $comment = '[充值审核失败额度返还]==>+' . (float) $rechargeLog['amount'] . '|[目前额度]==>' . $newFund;
+            $type = $this->model::SYSTEM;
+            $in_out = $this->model::INCREMENT;
+            $comment = '[充值审核失败额度返还]==>+' . $amount . '|[目前额度]==>' . $newFund;
             $fundOperationObj = new FundOperation();
             $fundOperationObj->insertOperationDatas(
-                $rechargeLogeloqM,
+                $this->model,
                 $type,
                 $in_out,
                 null,
                 null,
                 $auditFlow->admin_id,
                 $auditFlow->admin_name,
-                $rechargeLog->amount,
+                $amount,
                 $comment,
                 null
             );

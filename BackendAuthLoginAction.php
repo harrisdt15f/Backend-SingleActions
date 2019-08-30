@@ -14,13 +14,17 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class BackendAuthLoginAction
 {
     use AuthenticatesUsers;
+
+    private $maxAttempts;
+    private $decayMinutes;
+
     /**
      * Login user and create token
      * @param  BackEndApiMainController  $contll
-     * @param  $request
+     * @param  Request $request
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $request): JsonResponse
+    public function execute(BackEndApiMainController $contll, Request $request): JsonResponse
     {
         $request->validate([
             'email' => 'required|string|email',
@@ -36,13 +40,13 @@ class BackendAuthLoginAction
 
         /*
         if ($this->hasTooManyLoginAttempts($request)) {
-            $this->fireLockoutEvent($request);
-            $seconds = $this->limiter()->availableIn(
-                $this->throttleKey($request)
-            );
-            return $contll->msgOut(false, [], '100005');
+        $this->fireLockoutEvent($request);
+        $seconds = $this->limiter()->availableIn(
+        $this->throttleKey($request)
+        );
+        return $contll->msgOut(false, [], '100005');
         }
-        */
+         */
 
         if (!$token = $contll->currentAuth->attempt($credentials)) {
             return $contll->msgOut(false, [], '100002');

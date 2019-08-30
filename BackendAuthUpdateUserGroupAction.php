@@ -27,6 +27,7 @@ class BackendAuthUpdateUserGroupAction
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $targetUserEloq = $this->model::find($inputDatas['id']);
+        $result = [];
         if ($targetUserEloq !== null) {
             $targetUserEloq->group_id = $inputDatas['group_id'];
             $targetUserEloq->save();
@@ -34,7 +35,7 @@ class BackendAuthUpdateUserGroupAction
                 return $contll->msgOut(false, [], '', $targetUserEloq->errors()->messages());
             }
             $result = $targetUserEloq->toArray();
-            return $contll->msgOut(true, $result);
         }
+        return $contll->msgOut(true, $result);
     }
 }

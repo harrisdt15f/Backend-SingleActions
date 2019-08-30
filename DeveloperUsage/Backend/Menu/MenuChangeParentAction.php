@@ -27,11 +27,11 @@ class MenuChangeParentAction
     {
         $parseDatas = json_decode($inputDatas['dragResult'], true);
         $itemProcess = [];
-        $atLeastOne = false;
         if (!empty($parseDatas)) {
-            $menuELoq = new $this->model;
-            $itemProcess = $menuELoq->changeParent($parseDatas);
+            $itemProcess = $this->model->changeParent($parseDatas);
             return $contll->msgOut(true, $itemProcess);
+        } else {
+            return $contll->msgOut(false);
         }
     }
 }
