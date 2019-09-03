@@ -16,10 +16,10 @@ class UserHandleCommonAppliedPasswordHandleAction
     {
         //main model
         $eloqM = $contll->modelWithNameSpace($contll->withNameSpace);
+        $searchAbleFields = ['type', 'status', 'created_at', 'updated_at'];
         //target model to join
         $fixedJoin = 1; //number of joining tables
-        $withTable = 'auditFlow:id,admin_id,auditor_id,apply_note,auditor_note,updated_at,admin_name,auditor_name,username';
-        $searchAbleFields = ['type', 'status', 'created_at', 'updated_at'];
+        $withTable = 'auditFlow';
         $withSearchAbleFields = ['username'];
         $data = $contll->generateSearchQuery($eloqM, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields);
         return $contll->msgOut(true, $data);
