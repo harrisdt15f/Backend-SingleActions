@@ -25,10 +25,10 @@ class NoticeEditAction
     /**
      * 编辑 公告|站内信
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $noticesContentEloq = $this->model::find($inputDatas['id']);
         $editData = $inputDatas;

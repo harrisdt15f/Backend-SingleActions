@@ -11,10 +11,10 @@ class TaskSchedulingAddAction
     /**
      * 添加任务调度
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $data = CronJob::insertCronJob($inputDatas);
         if ($data['success'] === false) {

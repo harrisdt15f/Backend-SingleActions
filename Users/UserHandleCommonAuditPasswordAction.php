@@ -2,19 +2,20 @@
 
 namespace App\Http\SingleActions\Backend\Users;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Users\UserHandleController;
 use App\Models\User\FrontendUser;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
 class UserHandleCommonAuditPasswordAction
 {
     /**
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  UserHandleController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(UserHandleController $contll, array $inputDatas): JsonResponse
     {
         $eloqM = $contll->modelWithNameSpace($contll->withNameSpace);
         $applyUserEloq = $eloqM::where([
@@ -26,6 +27,9 @@ class UserHandleCommonAuditPasswordAction
             $auditFlowEloq = $applyUserEloq->auditFlow;
             //handle User
             $user = FrontendUser::find($applyUserEloq->user_id);
+            if ($user === null) {
+                return $contll->msgOut(false, [], '100111');
+            }
             if ($applyUserEloq->type == 1) {
                 $user->password = $applyUserEloq->audit_data;
             } else {
@@ -46,9 +50,7 @@ class UserHandleCommonAuditPasswordAction
                 return $contll->msgOut(true);
             } catch (Exception $e) {
                 DB::rollBack();
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
             }
         } else {
             return $contll->msgOut(false, [], '100102');

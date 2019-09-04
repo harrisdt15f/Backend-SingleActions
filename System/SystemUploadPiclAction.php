@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\System;
 
-use App\Http\Controllers\backendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
 use App\Models\User\UserPublicAvatar;
 use Illuminate\Http\JsonResponse;
@@ -19,10 +19,10 @@ class SystemUploadPiclAction
     /**
      * 图片上传
      * @param  BackEndApiMainController $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $imageObj = new ImageArrange();
         $file = $inputDatas['pic'];
@@ -45,9 +45,9 @@ class SystemUploadPiclAction
         //设置图片过期时间6小时
         $pic['expire_time'] = Carbon::now()->addHours(6)->timestamp;
         $redisKey = 'cleaned_images';
-        $cachePic = self::getCacheData($redisKey);
+        $cachePic = self::getTagsCacheData($redisKey);
         $cachePic[$pic['name']] = $pic;
-        self::saveCacheData($redisKey, $cachePic);
+        self::saveTagsCacheData($redisKey, $cachePic);
         return $contll->msgOut(true, $pic);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Activity\ActivityInfosController;
 use App\Lib\BaseCache;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Exception;
@@ -25,11 +25,11 @@ class ActivityInfosSortAction
 
     /**
      * 活动排序
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  ActivityInfosController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(ActivityInfosController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -52,13 +52,11 @@ class ActivityInfosSortAction
             }
             $stationaryData->save();
             DB::commit();
-            self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+            self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

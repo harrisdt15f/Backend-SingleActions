@@ -22,10 +22,10 @@ class AdvertisementTypeEditAction
     /**
      * 编辑广告类型
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $editData = $this->model::find($inputDatas['id']);
         $contll->editAssignment($editData, $inputDatas);
@@ -33,9 +33,7 @@ class AdvertisementTypeEditAction
             $editData->save();
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

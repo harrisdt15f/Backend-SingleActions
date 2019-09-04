@@ -21,10 +21,10 @@ class TaskSchedulingDeleteAction
     /**
      * 删除任务调度
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $cronJobEloq = $this->model::find($inputDatas['id']);
         $cronJobEloq->delete();

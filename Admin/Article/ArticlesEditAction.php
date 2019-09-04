@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Article;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Article\ArticlesController;
 use App\Models\Admin\Activity\BackendAdminMessageArticle;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -24,10 +24,11 @@ class ArticlesEditAction
 
     /**
      * 编辑文章
-     * @param  BackEndApiMainController  $contll
+     * @param  ArticlesController  $contll
+     * @param  array  $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(ArticlesController $contll, array $inputDatas): JsonResponse
     {
         try {
             $pastEloq = $this->model::find($inputDatas['id']);
@@ -57,9 +58,7 @@ class ArticlesEditAction
             $contll->sendMessage();
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

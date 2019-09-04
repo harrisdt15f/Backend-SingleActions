@@ -22,19 +22,17 @@ class ConfiguresDeleteAction
     /**
      * 删除配置
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         try {
             $configure = $this->model::find($inputDatas['id']);
             $configure->delete();
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

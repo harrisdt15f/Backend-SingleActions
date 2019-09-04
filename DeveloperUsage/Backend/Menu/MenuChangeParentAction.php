@@ -20,18 +20,18 @@ class MenuChangeParentAction
 
     /**
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $parseDatas = json_decode($inputDatas['dragResult'], true);
         $itemProcess = [];
-        $atLeastOne = false;
         if (!empty($parseDatas)) {
-            $menuELoq = new $this->model;
-            $itemProcess = $menuELoq->changeParent($parseDatas);
+            $itemProcess = $this->model->changeParent($parseDatas);
             return $contll->msgOut(true, $itemProcess);
+        } else {
+            return $contll->msgOut(false);
         }
     }
 }

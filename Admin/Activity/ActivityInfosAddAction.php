@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Activity;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Activity\ActivityInfosController;
 use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
@@ -24,11 +24,11 @@ class ActivityInfosAddAction
 
     /**
      * 添加活动
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  ActivityInfosController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(ActivityInfosController $contll, array $inputDatas): JsonResponse
     {
         //接收文件信息
         $imageObj = new ImageArrange();
@@ -65,7 +65,7 @@ class ActivityInfosAddAction
         if ($activityEloq->errors()->messages()) {
             return $contll->msgOut(false, [], '400', $activityEloq->errors()->messages());
         }
-        self::mtsFlushCache($contll->redisKey); //删除前台活动缓存
+        self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }
 }

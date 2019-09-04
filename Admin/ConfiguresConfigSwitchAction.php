@@ -22,10 +22,10 @@ class ConfiguresConfigSwitchAction
     /**
      * 配置状态开关 0关  1开
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastData = $this->model::find($inputDatas['id']);
         try {
@@ -33,9 +33,7 @@ class ConfiguresConfigSwitchAction
             $pastData->save();
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

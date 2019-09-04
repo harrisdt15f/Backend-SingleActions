@@ -19,7 +19,7 @@ class ReportManagementUserRechargeHistoryAction
         $searchAbleFields = ['user_name', 'company_order_num', 'deposit_mode', 'status'];
         $field = 'updated_at';
         $type = 'desc';
-        $datas = $contll->generateSearchQuery($rechargeHistoryEloq, $searchAbleFields, 0, null, null, $field, $type);
+        $datas = $contll->generateSearchQuery($rechargeHistoryEloq, $searchAbleFields, 0, null, [], $field, $type);
         return $contll->msgOut(true, $datas);
     }
 }

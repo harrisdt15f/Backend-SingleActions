@@ -26,10 +26,10 @@ class PartnerAdminGroupDestroyAction
 
     /**
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $id = $inputDatas['id'];
         $datas = $this->model::where([
@@ -46,25 +46,25 @@ class PartnerAdminGroupDestroyAction
             $datas->delete();
             //检查是否有人工充值权限
             $role = $datas->role == '*' ? Arr::wrap($datas->role) : Arr::wrap(json_decode($datas->role, true));
-            $fundOperation = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first()->toArray();
-            $isManualRecharge = in_array($fundOperation['id'], $role, true);
-            //如果有有人工充值权限   删除  FundOperation  BackendAdminRechargePermitGroup 表
-            if ($isManualRecharge === true) {
-                $fundOperationGroup = new BackendAdminRechargePermitGroup();
-                $fundOperationGroup->where('group_id', $id)->delete();
-                //需要删除的资金表 admin
-                $fundOperationEloq = new BackendAdminRechargePocessAmount();
-                $adminsData = BackendAdminUser::select('id')->where('group_id', $id)->get();
-                $admins = array_column($adminsData->toArray(), 'id');
-                if ($adminsData !== null) {
-                    $fundOperationEloq->whereIn('admin_id', $admins)->delete();
+            $fundOperation = BackendSystemMenu::select('id')->where('route', '/manage/recharge')->first();
+            if ($fundOperation !== null) {
+                $isManualRecharge = in_array($fundOperation['id'], $role, true);
+                //如果有有人工充值权限   删除  FundOperation  BackendAdminRechargePermitGroup 表
+                if ($isManualRecharge === true) {
+                    $fundOperationGroup = new BackendAdminRechargePermitGroup();
+                    $fundOperationGroup->where('group_id', $id)->delete();
+                    //需要删除的资金表 admin
+                    $fundOperationEloq = new BackendAdminRechargePocessAmount();
+                    $adminsData = BackendAdminUser::select('id')->where('group_id', $id)->get();
+                    $admins = array_column($adminsData->toArray(), 'id');
+                    if ($adminsData !== null) {
+                        $fundOperationEloq->whereIn('admin_id', $admins)->delete();
+                    }
                 }
             }
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

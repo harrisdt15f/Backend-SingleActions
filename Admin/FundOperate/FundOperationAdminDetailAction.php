@@ -18,9 +18,9 @@ class FundOperationAdminDetailAction
     public function execute(BackEndApiMainController $contll): JsonResponse
     {
         $group = BackendAdminRechargePermitGroup::select('group_id')->pluck('group_id')->toArray();
-        $this->inputs['extra_where']['method'] = 'whereIn';
-        $this->inputs['extra_where']['key'] = 'group_id';
-        $this->inputs['extra_where']['value'] = $group;
+        $contll->inputs['extra_where']['method'] = 'whereIn';
+        $contll->inputs['extra_where']['key'] = 'group_id';
+        $contll->inputs['extra_where']['value'] = $group;
         $eloqM = new BackendAdminUser();
         $fixedJoin = 1; //number of joining tables
         $withTable = 'operateAmount';
@@ -39,7 +39,9 @@ class FundOperationAdminDetailAction
         );
         $sysConfiguresEloq = SystemConfiguration::where('sign', 'admin_recharge_daily_limit')->first();
         $finalData['admin_user'] = $data;
-        $finalData['dailyFundLimit'] = $sysConfiguresEloq->value;
+        if ($sysConfiguresEloq !== null) {
+            $finalData['dailyFundLimit'] = $sysConfiguresEloq->value;
+        }
         return $contll->msgOut(true, $finalData);
     }
 }

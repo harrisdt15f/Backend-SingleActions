@@ -21,10 +21,10 @@ class AccountChangeTypeFieldAddAction
     /**
      * 帐变类型字段添加
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $typeField = new $this->model;
         $typeField->fill($inputDatas);

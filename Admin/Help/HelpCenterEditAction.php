@@ -25,10 +25,10 @@ class HelpCenterEditAction
     /**
      * 编辑
      * @param  BackEndApiMainController  $contll
-     * @param  $input
+     * @param  array                     $input
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $input): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $input): JsonResponse
     {
         $data = $this->model::find($input['id']);
         $contll->editAssignment($data, $input);

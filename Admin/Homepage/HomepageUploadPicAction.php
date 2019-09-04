@@ -23,10 +23,10 @@ class HomepageUploadPicAction
     /**
      * 修改首页模块下的图片
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastData = $this->model::where('en_name', $inputDatas['en_name'])->first();
         $imageObj = new ImageArrange();
@@ -50,9 +50,7 @@ class HomepageUploadPicAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             $imageObj->deletePic($pic['path']);
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

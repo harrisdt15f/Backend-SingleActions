@@ -24,10 +24,10 @@ class HomepageUploadIcoAction
     /**
      * 上传前台网站头ico
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastData = $this->model::where('en_name', 'frontend.ico')->first();
         $imageObj = new ImageArrange();
@@ -50,9 +50,7 @@ class HomepageUploadIcoAction
         } catch (Exception $e) {
             //删除上传成功的图片
             $imageObj->deletePic($ico['path']);
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

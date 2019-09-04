@@ -21,10 +21,10 @@ class FrontendAppRouteDeleteAction
     /**
      * 删除APP路由
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $routeEloq = $this->model::find($inputDatas['id']);
         $routeEloq->delete();

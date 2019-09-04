@@ -21,10 +21,10 @@ class PopularMethodsEditAction
     /**
      * 热门彩票二 编辑热门玩法
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastDataEloq = $this->model::find($inputDatas['id']);
         $contll->editAssignment($pastDataEloq, $inputDatas);

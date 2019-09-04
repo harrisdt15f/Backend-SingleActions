@@ -11,10 +11,10 @@ class LotteryNoticeEditAction
     /**
      * 编辑开奖公告的彩种
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array                     $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $pastEloq = FrontendLotteryNoticeList::find($inputDatas['id']);
         $pastEloq->lotteries_id = $inputDatas['lotteries_id'] ?? $pastEloq->lotteries_id;

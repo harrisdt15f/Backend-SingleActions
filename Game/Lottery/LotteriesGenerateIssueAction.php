@@ -12,10 +12,10 @@ class LotteriesGenerateIssueAction
     /**
      * 生成奖期
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $generateIssueData = $inputDatas;
         if ($inputDatas['lottery_id'] === '*') {

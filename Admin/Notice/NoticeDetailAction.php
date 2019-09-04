@@ -21,15 +21,15 @@ class NoticeDetailAction
     /**
      * 公告列表
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array                     $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $searchAbleFields = ['type'];
         $orderFields = 'id';
         $orderFlow = 'desc';
-        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, null, $orderFields, $orderFlow);
+        $datas = $contll->generateSearchQuery($this->model, $searchAbleFields, 0, null, [], $orderFields, $orderFlow);
         return $contll->msgOut(true, $datas);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\Homepage\HomepageBannerController;
 use App\Models\Admin\Homepage\FrontendPageBanner;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -22,11 +22,11 @@ class HomepageBannerSortAction
 
     /**
      * 首页轮播图排序
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  HomepageBannerController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(HomepageBannerController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -54,9 +54,7 @@ class HomepageBannerSortAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

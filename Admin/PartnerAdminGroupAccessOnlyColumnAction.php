@@ -2,7 +2,7 @@
 
 namespace App\Http\SingleActions\Backend\Admin;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Admin\PartnerAdminGroupController;
 use App\Models\Admin\BackendAdminAccessGroup;
 
 class PartnerAdminGroupAccessOnlyColumnAction
@@ -18,10 +18,10 @@ class PartnerAdminGroupAccessOnlyColumnAction
     }
 
     /**
-     * @param  BackEndApiMainController  $contll
+     * @param  PartnerAdminGroupController  $contll
      * @return array
      */
-    public function execute(BackEndApiMainController $contll): array
+    public function execute(PartnerAdminGroupController $contll): array
     {
         $partnerAdminAccess = new $this->model();
         $column = $partnerAdminAccess->getTableColumns();

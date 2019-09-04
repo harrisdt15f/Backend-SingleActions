@@ -2,12 +2,12 @@
 
 namespace App\Http\SingleActions\Backend\Game\Lottery;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\Game\Lottery\LotteriesController;
+use App\Lib\BaseCache;
 use App\Models\Game\Lottery\LotteryList;
 use App\Models\Game\Lottery\LotteryMethod;
 use App\Models\Game\Lottery\LotterySerie;
 use Illuminate\Http\JsonResponse;
-use App\Lib\BaseCache;
 
 class LotteriesMethodListsAction
 {
@@ -25,13 +25,13 @@ class LotteriesMethodListsAction
 
     /**
      * 获取玩法结果。
-     * @param   BackEndApiMainController  $contll
+     * @param   LotteriesController  $contll
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(LotteriesController $contll): JsonResponse
     {
         $redisKey = $contll->redisKey;
-        $data = self::getCacheData($redisKey);
+        $data = self::getTagsCacheData($redisKey);
         if (empty($data)) {
             $seriesEloq = LotterySerie::get();
             foreach ($seriesEloq as $seriesIthem) {
@@ -42,8 +42,8 @@ class LotteriesMethodListsAction
                         ->only(['id', 'cn_name', 'status']);
 //                    $methodEloq = $litems->gameMethods;
                     $currentLotteryId = $litems->en_name;
-                    $method[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
-                    $method[$seriesId][$currentLotteryId]['child'] = [];
+                    $data[$seriesId][$currentLotteryId]['data'] = $lotteyArr;
+                    $data[$seriesId][$currentLotteryId]['child'] = [];
                     //#########################################################
                     $methodGrops = $litems->methodGroups;
                     foreach ($methodGrops as $mgItems) {
@@ -94,7 +94,7 @@ class LotteriesMethodListsAction
                     }
                 }
             }
-            self::saveCacheData($redisKey, $data);
+            self::saveTagsCacheData($redisKey, $data);
         }
         return $contll->msgOut(true, $data);
     }

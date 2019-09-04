@@ -21,10 +21,10 @@ class AccountChangeTypeEditAction
     /**
      * 编辑帐变类型
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $editData = $inputDatas;
         $param = implode(',', $inputDatas['param']);

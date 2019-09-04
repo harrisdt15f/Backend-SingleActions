@@ -27,10 +27,10 @@ class UserHandleDeductionBalanceAction
     /**
      * 人工扣除用户资金
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         //人工扣款的帐变类型表
         $accountChangeTypeEloq = FrontendUsersAccountsType::select('name', 'sign')
@@ -40,6 +40,9 @@ class UserHandleDeductionBalanceAction
             return $contll->msgOut(false, [], '100103');
         }
         $userAccountsEloq = FrontendUsersAccount::where('user_id', $inputDatas['user_id'])->first();
+        if ($userAccountsEloq === null) {
+            return $contll->msgOut(false, [], '100112');
+        }
         if ($userAccountsEloq->balance < $inputDatas['amount']) {
             return $contll->msgOut(false, [], '100104');
         }
@@ -51,13 +54,13 @@ class UserHandleDeductionBalanceAction
             $editStatus = FrontendUsersAccount::where('user_id', $inputDatas['user_id'])
                 ->where('updated_at', $userAccountsEloq->updated_at)
                 ->update($editArr);
-            if ($editStatus === 0) {
+            if ($editStatus == 0) {
                 return $contll->msgOut(false, [], '100105');
             }
             //添加帐变记录
             $userEloq = $this->model::select('id', 'sign', 'top_id', 'parent_id', 'rid', 'username')
-            ->where('id', $inputDatas['user_id'])
-            ->first();
+                ->where('id', $inputDatas['user_id'])
+                ->first();
             $accountChangeReportEloq = new FrontendUsersAccountsReport();
             $accountChangeObj = new AccountChange();
             $accountChangeObj->addData(
@@ -72,9 +75,7 @@ class UserHandleDeductionBalanceAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollBack();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }

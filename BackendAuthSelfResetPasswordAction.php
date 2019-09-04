@@ -2,7 +2,8 @@
 
 namespace App\Http\SingleActions\Backend;
 
-use App\Http\Controllers\BackendApi\BackEndApiMainController;
+use App\Http\Controllers\BackendApi\BackendAuthController;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -11,11 +12,11 @@ class BackendAuthSelfResetPasswordAction
 {
     /**
      * change partner user Password
-     * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  BackendAuthController  $contll
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackendAuthController $contll, array $inputDatas): JsonResponse
     {
 
         if (!Hash::check($inputDatas['old_password'], $contll->partnerAdmin->password)) {
@@ -35,9 +36,7 @@ class BackendAuthSelfResetPasswordAction
                 ];
                 return $contll->msgOut(true, $data);
             } catch (Exception $e) {
-                $errorObj = $e->getPrevious()->getPrevious();
-                [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误妈，错误信息］
-                return $contll->msgOut(false, [], $sqlState, $msg);
+                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
             }
         }
     }

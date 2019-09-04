@@ -21,10 +21,10 @@ class MenuDeleteAction
 
     /**
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $menuEloq = new $this->model;
         $toDelete = $inputDatas['toDelete'];

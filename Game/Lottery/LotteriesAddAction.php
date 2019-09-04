@@ -19,10 +19,10 @@ class LotteriesAddAction
     /**
      * 添加彩种
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         $lotteryDatas = $inputDatas['lottery'];

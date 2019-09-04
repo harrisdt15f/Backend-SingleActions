@@ -12,26 +12,23 @@ class LotteryNoticeSortAction
     /**
      * 排序开奖公告的彩种
      * @param   BackEndApiMainController  $contll
-     * @param   $inputDatas
+     * @param   array                     $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         //上拉排序
+        $frontendLotteryNoticeList = new FrontendLotteryNoticeList();
         if ($inputDatas['sort_type'] == 1) {
             $stationaryData = FrontendLotteryNoticeList::find($inputDatas['front_id']);
             $stationaryData->sort = $inputDatas['front_sort'];
-            FrontendLotteryNoticeList::where('sort', '>=', $inputDatas['front_sort'])
-                ->where('sort', '<', $inputDatas['rearways_sort'])
-                ->increment('sort');
+            $frontendLotteryNoticeList->sortIncrement($inputDatas['front_sort'], $inputDatas['rearways_sort']);
         } elseif ($inputDatas['sort_type'] == 2) {
             //下拉排序
             $stationaryData = FrontendLotteryNoticeList::find($inputDatas['rearways_id']);
             $stationaryData->sort = $inputDatas['rearways_sort'];
-            FrontendLotteryNoticeList::where('sort', '>', $inputDatas['front_sort'])
-                ->where('sort', '<=', $inputDatas['rearways_sort'])
-                ->decrement('sort');
+            $frontendLotteryNoticeList->sortDecrement($inputDatas['front_sort'], $inputDatas['rearways_sort']);
         } else {
             return $contll->msgOut(false);
         }

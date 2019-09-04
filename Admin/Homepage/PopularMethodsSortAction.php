@@ -4,6 +4,7 @@ namespace App\Http\SingleActions\Backend\Admin\Homepage;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\Admin\Homepage\FrontendLotteryFnfBetableList;
+use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -22,10 +23,10 @@ class PopularMethodsSortAction
     /**
      * 热门玩法拉动排序
      * @param  BackEndApiMainController  $contll
-     * @param  $inputDatas
+     * @param  array $inputDatas
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         DB::beginTransaction();
         try {
@@ -51,9 +52,7 @@ class PopularMethodsSortAction
             return $contll->msgOut(true);
         } catch (Exception $e) {
             DB::rollback();
-            $errorObj = $e->getPrevious()->getPrevious();
-            [$sqlState, $errorCode, $msg] = $errorObj->errorInfo; //［sql编码,错误码，错误信息］
-            return $contll->msgOut(false, [], $sqlState, $msg);
+            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
 }
