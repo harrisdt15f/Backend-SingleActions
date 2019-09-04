@@ -35,75 +35,78 @@ class ArtificialRechargeRechargeAction
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
         $amount = (float) $inputDatas['amount'];
-        DB::beginTransaction();
         $partnerAdmin = $contll->partnerAdmin;
         $userEloq = FrontendUser::find($inputDatas['id']);
-        if ($userEloq !== null) {
-            try {
-                //普通管理员人工充值需要审核的操作
-                if ($contll->currentPartnerAccessGroup->role !== '*') {
-                    //扣除管理员额度
-                    $adminFundData = BackendAdminRechargePocessAmount::where('admin_id', $partnerAdmin->id)->first();
-                    if ($adminFundData === null) {
-                        return $contll->msgOut(false, [], '101100');
-                    }
-                    $adminOperationFund = $adminFundData->fund;
-                    //可操作额度小于充值额度
-                    if ($adminOperationFund < $amount) {
-                        return $contll->msgOut(false, [], '101101');
-                    }
-                    $newFund = $adminOperationFund - $amount;
-                    $adminFundEdit = ['fund' => $newFund];
-                    $adminFundData->fill($adminFundEdit);
-                    $adminFundData->save();
-                    //插入审核表
-                    $auditFlowID = $this->insertAuditFlow($partnerAdmin->id, $partnerAdmin->name, $inputDatas['apply_note']);
-                    //发送站内消息 提醒有权限的管理员审核
-                    $this->sendMessage();
-                } else {
-                    //超管操作不需审核 直接给用户充值
-                    $accountChangeTypeEloq = FrontendUsersAccountsType::where('sign', 'artificial_recharge')->first();
-                    if ($accountChangeTypeEloq === null) {
-                        return $contll->msgOut(false, [], '100901');
-                    }
-                    //修改用户金额
-                    $UserAccounts = FrontendUsersAccount::where('user_id', $inputDatas['id'])->first();
-                    if ($UserAccounts === null) {
-                        return $contll->msgOut(false, [], '100906');
-                    }
-                    $balance = $UserAccounts->balance + $amount;
-                    $UserAccountsEdit = ['balance' => $balance];
-                    $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)->where('updated_at', $UserAccounts->updated_at)->update($UserAccountsEdit);
-                    //充值失败回滚
-                    if ($editStatus === false) {
-                        DB::rollBack();
-                        return $contll->msgOut(false, [], '101102');
-                    }
-                    //用户帐变表
-                    $accountChangeReportEloq = new FrontendUsersAccountsReport();
-                    $accountChangeObj = new AccountChange();
-                    $accountChangeObj->addData($accountChangeReportEloq, $userEloq->toArray(), $amount, (float) $UserAccounts->balance, $balance, $accountChangeTypeEloq);
-                }
-                //添加人工充值明细表
-                $auditFlowID = $auditFlowID ?? null;
-                $newFund = $newFund ?? null;
-                $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $contll->currentPartnerAccessGroup->role);
-                //用户 users_recharge_histories 表
-                $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
-                $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $contll->currentPartnerAccessGroup->role);
-                // 用户 users_recharge_logs 表
-                $this->insertRechargeLog($companyOrderNum, $deposit_mode, $contll->log_uuid);
-                DB::commit();
-                return $contll->msgOut(true);
-            } catch (Exception $e) {
-                DB::rollBack();
-                return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
-            }
-        } else {
-            return $contll->msgOut(false);
+        if ($userEloq === null) {
+            return $contll->msgOut(false, [], '101103');
         }
+        $auditFlowID = null;
+        $newFund = null;
+        DB::beginTransaction();
+        //普通管理员人工充值需要审核的操作    超管给用户充值不需审核
+        if ($contll->currentPartnerAccessGroup->role !== '*') {
+            $adminFundData = BackendAdminRechargePocessAmount::where('admin_id', $partnerAdmin->id)->first();
+            if ($adminFundData === null) {
+                return $contll->msgOut(false, [], '101100');
+            }
+            if ($adminFundData->fund < $amount) {
+                return $contll->msgOut(false, [], '101101');
+            }
+            $newFund = $adminFundData->fund - $amount; //扣除管理员额度
+            $adminFundEdit = ['fund' => $newFund];
+            $adminFundData->fill($adminFundEdit);
+            $adminFundData->save();
+            $auditFlowID = $this->insertAuditFlow($partnerAdmin->id, $partnerAdmin->name, $inputDatas['apply_note']); //插入审核表
+            $this->sendMessage(); //发送站内消息 提醒有权限的管理员审核
+        } else {
+            if ($userEloq->account()->exists()) {
+                $account = $userEloq->account;
+                $params = [
+                    'from_admin_id' => $partnerAdmin->id,
+                    'user_id' => $userEloq->id,
+                    'amount' => $amount,
+                ];
+                $result = $account->operateAccount($params, 'artificial_recharge');
+                if ($result !== true) {
+                    DB::rollBack();
+                    return $contll->msgOut(false, [], '', $result);
+                }
+            } else {
+                return $contll->msgOut(false, [], '100906');
+            }
+        }
+        $compileRecharge = $this->compileRecharge($partnerAdmin, $userEloq, $amount, $auditFlowID, $newFund, $contll->currentPartnerAccessGroup->role, $contll->log_uuid);
+        if ($compileRecharge['success'] === false) {
+            DB::rollBack();
+            return $contll->msgOut(false, [], '101102');
+        }
+        DB::commit();
+        return $contll->msgOut(true);
     }
 
+    public function compileRecharge($partnerAdmin, $userEloq, $amount, $auditFlowID, $newFund, $role, $uuid)
+    {
+        //添加人工充值明细表
+        $insertAuditFlow = $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role);
+        if ($insertAuditFlow === false) {
+            return ['success' => false];
+        }
+
+        //用户 users_recharge_histories 表
+        $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
+        $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role);
+        if ($companyOrderNum === '') {
+            return ['success' => false];
+        }
+
+        // 用户 users_recharge_logs 表
+        $insertRechargeLog = $this->insertRechargeLog($companyOrderNum, $deposit_mode, $uuid);
+        if ($insertRechargeLog === false) {
+            return ['success' => false];
+        }
+
+        return ['success' => true];
+    }
     /**
      * 插入审核表
      * @param  int    $admin_id
@@ -162,16 +165,16 @@ class ArtificialRechargeRechargeAction
      * @param  float $amount [变动的额度]
      * @param  mixed $newFund [变动后的额度]
      * @param  string $role
-     * @return void
+     * @return bool
      */
-    public function insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role): void
+    public function insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role): bool
     {
         $rechargeLog = new BackendAdminRechargehumanLog();
         $type = $role !== '*' ? BackendAdminRechargehumanLog::ADMIN : 3;
         $in_out = BackendAdminRechargehumanLog::DECREMENT;
         $comment = '[给用户人工充值]==>-' . $amount . '|[目前额度]==>' . $newFund;
         $fundOperationObj = new FundOperation();
-        $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $partnerAdmin->id, $partnerAdmin->name, $userEloq->id, $userEloq->username, $amount, $comment, $auditFlowID);
+        return $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $partnerAdmin->id, $partnerAdmin->name, $userEloq->id, $userEloq->username, $amount, $comment, $auditFlowID);
     }
 
     /**
@@ -190,6 +193,9 @@ class ArtificialRechargeRechargeAction
         $rechargeHistoryArr = $this->insertRechargeHistoryArr($userEloq->id, $userEloq->username, $userEloq->is_tester, $userEloq->top_id, $amount, $auditFlowID, $status, $deposit_mode);
         $userRechargeHistory->fill($rechargeHistoryArr);
         $userRechargeHistory->save();
+        if ($userRechargeHistory->errors()->messages()) {
+            return '';
+        }
         return $userRechargeHistory->company_order_num;
     }
 
@@ -198,15 +204,19 @@ class ArtificialRechargeRechargeAction
      * @param  string   $companyOrderNum   [充值订单号]
      * @param  int      $deposit_mode      [充值模式 0自动 1手动]
      * @param  string   $log_uuid
-     * @return void
+     * @return bool
      */
-    public function insertRechargeLog($companyOrderNum, $deposit_mode, $log_uuid): void
+    public function insertRechargeLog($companyOrderNum, $deposit_mode, $log_uuid): bool
     {
         $rchargeLogeEloq = new UsersRechargeLog();
         $log_num = $log_uuid;
         $rechargeLogArr = $this->insertRechargeLogArr($companyOrderNum, $log_num, $deposit_mode);
         $rchargeLogeEloq->fill($rechargeLogArr);
         $rchargeLogeEloq->save();
+        if ($rchargeLogeEloq->errors()->messages()) {
+            return false;
+        }
+        return true;
     }
 
     /**
@@ -222,10 +232,10 @@ class ArtificialRechargeRechargeAction
      * @param  int    $channel
      * @param  int    $payment_id      [支付通道id]
      * @param  float  $real_amount     [实际支付金额]
-     * @param  float  $fee             [手续费]
+     * @param  float  $handlingFee     [手续费]
      * @return array
      */
-    public function insertRechargeHistoryArr($user_id, $user_name, $is_tester, $top_agent, $amount, $audit_flow_id, $status, $deposit_mode, $channel = null, $payment_id = null, $real_amount = null, $fee = null): array
+    public function insertRechargeHistoryArr($user_id, $user_name, $is_tester, $top_agent, $amount, $audit_flow_id, $status, $deposit_mode, $channel = null, $payment_id = null, $real_amount = null, $handlingFee = null): array
     {
         $insertSqlArr = [
             'user_id' => $user_id,
@@ -243,7 +253,7 @@ class ArtificialRechargeRechargeAction
                 'channel' => $channel,
                 'payment_id' => $payment_id,
                 'real_amount' => $real_amount,
-                'fee' => $fee,
+                'fee' => $handlingFee,
             ];
             $insertSqlArr = array_merge($insertSqlArr, $insertDataArr);
         }
