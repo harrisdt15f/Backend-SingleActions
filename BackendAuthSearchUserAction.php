@@ -20,15 +20,19 @@ class BackendAuthSearchUserAction
     }
 
     /**
-     * @param  BackEndApiMainController $contll
-     * @param  array                    $inputDatas
+     * @param  BackEndApiMainController  $contll
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
+    public function execute(BackEndApiMainController $contll): JsonResponse
     {
-        $targetUserEloq = $this->model::where([
-            ['email', '=', $inputDatas['email']],
-        ])->first();
+        $searchAbleFields = [
+            'name',
+            'email',
+        ];
+        $targetUserEloq = $contll->generateSearchQuery(
+            $this->model,
+            $searchAbleFields
+        ) ;
         if ($targetUserEloq === null) {
             return $contll->msgOut(false, [], '100004');
         }
