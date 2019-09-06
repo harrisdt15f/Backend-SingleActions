@@ -4,10 +4,7 @@ namespace App\Http\SingleActions\Backend\Users\Fund;
 
 use App\Http\Controllers\BackendApi\Users\Fund\RechargeCheckController;
 use App\Lib\Common\FundOperation;
-use App\Models\Admin\Fund\BackendAdminRechargePocessAmount;
-use App\Models\BackendAdminAuditFlowList;
 use App\Models\User\Fund\BackendAdminRechargehumanLog;
-use App\Models\User\UsersRechargeHistorie;
 use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -39,55 +36,31 @@ class RechargeCheckAuditFailureAction
         if ($rechargeLog->status !== 0) {
             return $contll->msgOut(false, [], '100900');
         }
+
         $amount = $rechargeLog->amount;
-        $adminFundData = BackendAdminRechargePocessAmount::where('admin_id', $rechargeLog->admin_id)->first();
+        if ($amount === null) {
+            return $contll->msgOut(false, [], '100906');
+        }
+
+        $adminFundData = $rechargeLog->adminAmount;
         if ($adminFundData === null) {
             return $contll->msgOut(false, [], '100903');
         }
-        $newFund = $adminFundData->fund + $amount;
+
+        $historyEloq = $rechargeLog->rechargeHistorie;
+        if ($historyEloq === null) {
+            return $contll->msgOut(false, [], '100904');
+        }
+
+        $auditFlow = $rechargeLog->auditFlow;
+        if ($auditFlow === null) {
+            return $contll->msgOut(false, [], '100904');
+        }
+
+        $newFund = (float) $adminFundData->fund + (float) $amount;
         DB::beginTransaction();
         try {
-            // 修改 backend_admin_rechargehuman_logs 表 的审核状态
-            $rechargeLogEdit = ['status' => $rechargeLog::AUDITFAILURE];
-            $rechargeLog->fill($rechargeLogEdit);
-            $rechargeLog->save();
-
-            // 修改 users_recharge_histories 表 的审核状态
-            $historyEloq = UsersRechargeHistorie::where('audit_flow_id', $rechargeLog->audit_flow_id)->first();
-            if ($historyEloq === null) {
-                return $contll->msgOut(false, [], '100904');
-            }
-            $historyEdit = ['status' => $historyEloq::AUDITFAILURE];
-            $historyEloq->fill($historyEdit);
-            $historyEloq->save();
-
-            //退还管理员人工充值额度
-            $auditFlow = BackendAdminAuditFlowList::where('id', $rechargeLog->audit_flow_id)->first();
-            if ($auditFlow === null) {
-                return $contll->msgOut(false, [], '100904');
-            }
-            $adminFundDataEdit = ['fund' => $newFund];
-            $contll->auditFlowEdit($auditFlow, $contll->partnerAdmin, $inputDatas['auditor_note']);
-            $adminFundData->fill($adminFundDataEdit);
-            $adminFundData->save();
-
-            //返还额度后  backend_admin_rechargehuman_logs 记录表
-            $type = $this->model::SYSTEM;
-            $in_out = $this->model::INCREMENT;
-            $comment = '[充值审核失败额度返还]==>+' . $amount . '|[目前额度]==>' . $newFund;
-            $fundOperationObj = new FundOperation();
-            $fundOperationObj->insertOperationDatas(
-                $this->model,
-                $type,
-                $in_out,
-                null,
-                null,
-                $auditFlow->admin_id,
-                $auditFlow->admin_name,
-                $amount,
-                $comment,
-                null
-            );
+            $this->compileReject($contll, $rechargeLog, $historyEloq, $auditFlow, $adminFundData, $inputDatas, $amount, $newFund);
             //发送站内消息提醒管理员
             $contll->sendMessage($rechargeLog->admin_id, $contll->failureMessage);
             DB::commit();
@@ -96,5 +69,42 @@ class RechargeCheckAuditFailureAction
             DB::rollBack();
             return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
+    }
+
+    public function compileReject($contll, $rechargeLog, $historyEloq, $auditFlow, $adminFundData, $inputDatas, $amount, $newFund)
+    {
+        // 修改 backend_admin_rechargehuman_logs 表 的审核状态
+        $rechargeLogEdit = ['status' => BackendAdminRechargehumanLog::AUDITFAILURE];
+        $rechargeLog->fill($rechargeLogEdit);
+        $rechargeLog->save();
+
+        // 修改 users_recharge_histories 表 的审核状态
+        $historyEdit = ['status' => $historyEloq::AUDITFAILURE];
+        $historyEloq->fill($historyEdit);
+        $historyEloq->save();
+
+        //退还管理员人工充值额度
+        $adminFundDataEdit = ['fund' => $newFund];
+        $contll->auditFlowEdit($auditFlow, $contll->partnerAdmin, $inputDatas['auditor_note']);
+        $adminFundData->fill($adminFundDataEdit);
+        $adminFundData->save();
+
+        //返还额度后  backend_admin_rechargehuman_logs 记录表
+        $type = BackendAdminRechargehumanLog::SYSTEM;
+        $in_out = BackendAdminRechargehumanLog::INCREMENT;
+        $comment = '[充值审核失败额度返还]==>+' . $amount . '|[目前额度]==>' . $newFund;
+        $fundOperationObj = new FundOperation();
+        $fundOperationObj->insertOperationDatas(
+            $this->model,
+            $type,
+            $in_out,
+            null,
+            null,
+            $auditFlow->admin_id,
+            $auditFlow->admin_name,
+            $amount,
+            $comment,
+            null,
+        );
     }
 }

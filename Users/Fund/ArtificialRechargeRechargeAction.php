@@ -86,21 +86,21 @@ class ArtificialRechargeRechargeAction
 
     public function compileRecharge($partnerAdmin, $userEloq, $amount, $auditFlowID, $newFund, $role, $uuid)
     {
+        //用户 users_recharge_histories 表
+        $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
+        $rechargeHistory = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role);
+        if ($rechargeHistory === false) {
+            return ['success' => false];
+        }
+
         //添加人工充值明细表
-        $insertAuditFlow = $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role);
+        $insertAuditFlow = $this->insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role, $rechargeHistory->id);
         if ($insertAuditFlow === false) {
             return ['success' => false];
         }
 
-        //用户 users_recharge_histories 表
-        $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
-        $companyOrderNum = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role);
-        if ($companyOrderNum === '') {
-            return ['success' => false];
-        }
-
         // 用户 users_recharge_logs 表
-        $insertRechargeLog = $this->insertRechargeLog($companyOrderNum, $deposit_mode, $uuid);
+        $insertRechargeLog = $this->insertRechargeLog($rechargeHistory->company_order_num, $deposit_mode, $uuid);
         if ($insertRechargeLog === false) {
             return ['success' => false];
         }
@@ -165,16 +165,17 @@ class ArtificialRechargeRechargeAction
      * @param  float $amount [变动的额度]
      * @param  mixed $newFund [变动后的额度]
      * @param  string $role
+     * @param  int $rechargeId
      * @return bool
      */
-    public function insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role): bool
+    public function insertFundLog($partnerAdmin, $userEloq, $auditFlowID, $amount, $newFund, $role, $rechargeId): bool
     {
         $rechargeLog = new BackendAdminRechargehumanLog();
         $type = $role !== '*' ? BackendAdminRechargehumanLog::ADMIN : 3;
         $in_out = BackendAdminRechargehumanLog::DECREMENT;
         $comment = '[给用户人工充值]==>-' . $amount . '|[目前额度]==>' . $newFund;
         $fundOperationObj = new FundOperation();
-        return $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $partnerAdmin->id, $partnerAdmin->name, $userEloq->id, $userEloq->username, $amount, $comment, $auditFlowID);
+        return $fundOperationObj->insertOperationDatas($rechargeLog, $type, $in_out, $partnerAdmin->id, $partnerAdmin->name, $userEloq->id, $userEloq->username, $amount, $comment, $auditFlowID, $rechargeId);
     }
 
     /**
@@ -184,7 +185,6 @@ class ArtificialRechargeRechargeAction
      * @param  int     $deposit_mode   [充值模式 0自动 1手动]
      * @param  float   $amount         [金额]
      * @param  string  $role
-     * @return string
      */
     public function insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role)
     {
@@ -194,9 +194,9 @@ class ArtificialRechargeRechargeAction
         $userRechargeHistory->fill($rechargeHistoryArr);
         $userRechargeHistory->save();
         if ($userRechargeHistory->errors()->messages()) {
-            return '';
+            return false;
         }
-        return $userRechargeHistory->company_order_num;
+        return $userRechargeHistory;
     }
 
     /**
