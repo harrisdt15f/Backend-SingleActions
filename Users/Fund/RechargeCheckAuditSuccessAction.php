@@ -3,15 +3,8 @@
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
 use App\Http\Controllers\BackendApi\Users\Fund\RechargeCheckController;
-use App\Lib\Common\AccountChange;
-use App\Models\BackendAdminAuditFlowList;
-use App\Models\User\FrontendUser;
 use App\Models\User\Fund\BackendAdminRechargehumanLog;
-use App\Models\User\Fund\FrontendUsersAccount;
-use App\Models\User\Fund\FrontendUsersAccountsReport;
-use App\Models\User\Fund\FrontendUsersAccountsType;
 use App\Models\User\UsersRechargeHistorie;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -35,72 +28,77 @@ class RechargeCheckAuditSuccessAction
      */
     public function execute(RechargeCheckController $contll, array $inputDatas): JsonResponse
     {
-        // 审核表
         $rechargeLog = $this->model::find($inputDatas['id']);
         if ($rechargeLog->status !== 0) {
             return $contll->msgOut(false, [], '100900');
         }
-        $auditFlow = BackendAdminAuditFlowList::where('id', $rechargeLog->audit_flow_id)->first();
+
+        $user = $rechargeLog->user;
+        if ($user === null) {
+            return $contll->msgOut(false, [], '100901');
+        }
+
+        $auditFlow = $rechargeLog->auditFlow;
         if ($auditFlow === null) {
             return $contll->msgOut(false, [], '100904');
         }
-        //检查是否存在 人工充值 的帐变类型表
-        $accountChangeTypeEloq = FrontendUsersAccountsType::where('sign', 'artificial_recharge')->first();
-        if (is_null($accountChangeTypeEloq)) {
-            return $contll->msgOut(false, [], '100901');
-        }
+
         DB::beginTransaction();
-        try {
-            // 修改 backend_admin_rechargehuman_logs 表 的审核状态
-            $rechargeLogEdit = ['status' => $rechargeLog::AUDITSUCCESS];
-            $rechargeLog->fill($rechargeLogEdit);
-            $rechargeLog->save();
-            // 修改 users_recharge_histories 表 的审核状态
-            $historyEloq = UsersRechargeHistorie::where('audit_flow_id', $rechargeLog->audit_flow_id)->first();
-            if ($historyEloq === null) {
-                return $contll->msgOut(false, [], '100904');
-            }
-            $historyEdit = ['status' => $historyEloq::AUDITSUCCESS];
-            $historyEloq->fill($historyEdit);
-            $historyEloq->save();
-            //修改backend_admin_audit_flow_lists审核表
-            $userData = FrontendUser::where('id', $rechargeLog->user_id)->with('account')->first();
-            if ($userData === null) {
-                return $contll->msgOut(false, [], '100904');
-            }
-            $balance = $userData->account->balance + $rechargeLog->amount;
-            $contll->auditFlowEdit($auditFlow, $contll->partnerAdmin, $inputDatas['auditor_note']);
-            //修改用户金额
-            $UserAccounts = FrontendUsersAccount::where('user_id', $rechargeLog->user_id)->first();
-            if ($UserAccounts === null) {
-                return $contll->msgOut(false, [], '100904');
-            }
-            $UserAccountsEdit = ['balance' => $balance];
-            $editStatus = FrontendUsersAccount::where('user_id', $UserAccounts->user_id)
-                ->where('updated_at', $UserAccounts->updated_at)
-                ->update($UserAccountsEdit);
-            if ($editStatus == 0) {
-                DB::rollBack();
-                return $contll->msgOut(false, [], '100902');
-            }
-            //用户帐变表
-            $accountChangeReportEloq = new FrontendUsersAccountsReport();
-            $accountChangeObj = new AccountChange();
-            $accountChangeObj->addData(
-                $accountChangeReportEloq,
-                $userData,
-                $rechargeLog['amount'],
-                $UserAccounts->balance,
-                $balance,
-                $accountChangeTypeEloq
-            );
+
+        $compileRecharge = $this->compileRecharge($rechargeLog, $user, $auditFlow, $inputDatas, $contll->partnerAdmin, $contll);
+
+        if ($compileRecharge['success'] === false) {
+            DB::rollBack();
+            return $contll->msgOut($compileRecharge['success'], [], $compileRecharge['code'], $compileRecharge['messages']);
+        } else {
             //发送站内消息提醒管理员
             $contll->sendMessage($rechargeLog->admin_id, $contll->successMessage);
             DB::commit();
             return $contll->msgOut(true);
-        } catch (Exception $e) {
-            DB::rollBack();
-            return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
+        }
+    }
+
+    public function compileRecharge($rechargeLog, $user, $auditFlow, $inputDatas, $admin, $contll)
+    {
+        // 修改 backend_admin_rechargehuman_logs 表 的审核状态
+        $rechargeLogEdit = ['status' => BackendAdminRechargehumanLog::AUDITSUCCESS];
+        $rechargeLog->fill($rechargeLogEdit);
+        $rechargeLog->save();
+        if ($rechargeLog->errors()->messages()) {
+            return ['success' => false, 'code' => '100907', 'messages' => ''];
+        }
+
+        // 修改 users_recharge_histories 表 的审核状态
+        $historyEloq = $rechargeLog->rechargeHistorie;
+        if ($historyEloq === null) {
+            return ['success' => false, 'code' => '100904', 'messages' => ''];
+        }
+        $historyEdit = ['status' => $historyEloq::AUDITSUCCESS];
+        $historyEloq->fill($historyEdit);
+        $historyEloq->save();
+        if ($historyEloq->errors()->messages()) {
+            return ['success' => false, 'code' => '100907', 'messages' => ''];
+        }
+
+        //修改审核表auditFlow
+        $contll->auditFlowEdit($auditFlow, $admin, $inputDatas['auditor_note']);
+
+        //用户帐变
+        if ($user->account()->exists()) {
+            $account = $user->account;
+            $params = [
+                'from_admin_id' => $admin->id,
+                'user_id' => $user->id,
+                'amount' => $historyEloq->amount,
+            ];
+            $result = $account->operateAccount($params, 'artificial_recharge');
+            if ($result !== true) {
+                return ['success' => false, 'code' => '', 'messages' => $result];
+            } else {
+                return ['success' => true];
+            }
+        } else {
+            return ['success' => false, 'code' => '100906', 'messages' => ''];
         }
     }
 }
