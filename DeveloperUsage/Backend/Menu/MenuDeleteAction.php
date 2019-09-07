@@ -26,20 +26,21 @@ class MenuDeleteAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
-        $menuEloq = new $this->model;
         $toDelete = $inputDatas['toDelete'];
         if (!empty($toDelete)) {
             try {
-                $datas = $menuEloq->find($toDelete)->each(function ($product, $key) {
+                $datas = $this->model->find($toDelete)->each(static function ($product) {
                     $data[] = $product->toArray();
                     $product->delete();
                     return $data;
                 });
-                $menuEloq->refreshStar();
+                $this->model->refreshStar();
                 return $contll->msgOut(true, $datas);
             } catch (Exception $e) {
                 return $contll->msgOut(false, [], '0002', $e->getMessage());
             }
+        } else {
+            return $contll->msgOut(false);
         }
     }
 }
