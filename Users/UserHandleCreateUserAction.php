@@ -8,7 +8,8 @@ use App\Models\User\Fund\FrontendUsersAccount;
 use App\Models\User\UserPublicAvatar;
 use Exception;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
+use App\Lib\Common\VerifyPassword;
+use App\Lib\Common\VerifyFundPassword;
 use Illuminate\Support\Facades\DB;
 
 class UserHandleCreateUserAction
@@ -31,6 +32,18 @@ class UserHandleCreateUserAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
+        //检验密码与资金密码不能一致
+        if ($inputDatas['password'] === $inputDatas['fund_password']) {
+            return $contll->msgOut(false, [], '100122');
+        }
+        //检验密码
+        if (VerifyPassword::verifyPassword($contll, $inputDatas['password'], 1)) {
+            return VerifyPassword::verifyPassword($contll, $inputDatas['password'], 1);
+        }
+        //检验资金密码
+        if (VerifyFundPassword::verifyFundPassword($contll, $inputDatas['fund_password'],1)) {
+            return VerifyFundPassword::verifyFundPassword($contll, $inputDatas['fund_password'], 1);
+        }
         $inputDatas['password'] = bcrypt($inputDatas['password']);
         $inputDatas['fund_password'] = bcrypt($inputDatas['fund_password']);
         $inputDatas['platform_id'] = $contll->currentPlatformEloq->platform_id;
