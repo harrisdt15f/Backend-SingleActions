@@ -35,21 +35,22 @@ class HomepageUploadPicAction
             $contll->currentPlatformEloq->platform_id,
             $contll->currentPlatformEloq->platform_name
         );
-        $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
-        if ($pic['success'] === false) {
-            return $contll->msgOut(false, [], '400', $pic['msg']);
+        $picArr = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
+        if ($picArr['success'] === false) {
+            return $contll->msgOut(false, [], '400', $picArr['msg']);
         }
         $pastLogoPath = $pastData->value;
         try {
-            $pastData->value = '/' . $pic['path'];
+            $pastData->value = '/' . $picArr['path'];
             $pastData->save();
             //删除原图
             if ($pastLogoPath !== null) {
                 $imageObj->deletePic(substr($pastLogoPath, 1));
             }
+            FrontendAllocatedModel::getWebBasicContent(true); // 更新首页基本内容缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
-            $imageObj->deletePic($pic['path']);
+            $imageObj->deletePic($picArr['path']);
             return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }

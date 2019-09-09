@@ -37,19 +37,20 @@ class HomepageUploadIcoAction
             $contll->currentPlatformEloq->platform_id,
             $contll->currentPlatformEloq->platform_name
         ) . '/ico';
-        $ico = $imageObj->uploadImg($inputDatas['ico'], $depositPath);
+        $icoArr = $imageObj->uploadImg($inputDatas['ico'], $depositPath);
         $pastIco = $pastData->value;
         try {
-            $pastData->value = '/' . $ico['path'];
+            $pastData->value = '/' . $icoArr['path'];
             $pastData->save();
             //删除原图
             if ($pastIco !== null) {
                 $imageObj->deletePic(substr($pastIco, 1));
             }
+            FrontendAllocatedModel::getWebBasicContent(true); // 更新首页基本内容缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
             //删除上传成功的图片
-            $imageObj->deletePic($ico['path']);
+            $imageObj->deletePic($icoArr['path']);
             return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
