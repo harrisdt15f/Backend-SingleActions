@@ -26,8 +26,7 @@ class FrontendAllocatedModelDetailAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
-        $eloqM = new $this->model;
-        $allFrontendModel = $eloqM->allFrontendModel($inputDatas['type']);
+        $allFrontendModel = $this->model->allFrontendModel((int) $inputDatas['type']);
         return $contll->msgOut(true, $allFrontendModel);
     }
 }
