@@ -38,7 +38,7 @@ class LotteriesMethodListsAction
                 $lottery = $seriesIthem->lotteries; //->where('status',1)
                 $seriesId = $seriesIthem->series_name;
                 foreach ($lottery as $litems) {
-                    $data = $this->getMethodData($litems, $seriesId);
+                    $data = $this->getMethodData($litems, $seriesId, $data);
                 }
             }
             self::saveTagsCacheData($redisKey, $data);
@@ -67,9 +67,8 @@ class LotteriesMethodListsAction
         return $dataArr;
     }
 
-    public function getMethodData($litems, $seriesId): array
+    public function getMethodData($litems, $seriesId, &$data): array
     {
-        $data = [];
         $lotteyArr = collect($litems->toArray())
             ->only(['id', 'cn_name', 'status']);
         $currentLotteryId = $litems->en_name;
