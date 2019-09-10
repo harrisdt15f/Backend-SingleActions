@@ -44,6 +44,9 @@ class HomepageEditAction
         if (isset($inputDatas['status'])) {
             $this->model::showModelCache();
         }
+        if ($pastData->en_name === 'customer.service') {
+            FrontendAllocatedModel::getWebBasicContent(true); // 更新首页基本内容缓存
+        }
         return $contll->msgOut(true);
     }
 }

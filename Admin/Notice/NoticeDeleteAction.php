@@ -34,12 +34,13 @@ class NoticeDeleteAction
         try {
             $noticesContentEloq = $this->model::find($inputDatas['id']);
             $picStr = $noticesContentEloq->pic_path;
-            $type = $noticesContentEloq->type;
-            $noticesContentEloq->delete();
-            //删除站内信时，需要把关联的用户站内信表都删除
-            if ($type === $this->model::TYPE_MESSAGE) {
-                FrontendMessageNotice::where('notices_content_id', $inputDatas['id'])->delete();
+
+            //删除公告时，处理sort
+            if ($noticesContentEloq->type ===$this->model::TYPE_NOTICE) {
+                $this->model::where('sort', '>', $noticesContentEloq->sort)->decrement('sort');
             }
+
+            $noticesContentEloq->delete();
             DB::commit();
             if ($picStr !== null) {
                 $picArr = explode('|', $picStr);
@@ -48,6 +49,7 @@ class NoticeDeleteAction
             }
             return $contll->msgOut(true);
         } catch (Exception $e) {
+            DB::rollback();
             return $contll->msgOut(false, [], $e->getCode(), $e->getMessage());
         }
     }
