@@ -46,12 +46,10 @@ class ReportManagementUserBetsAction
     public function getUserIds($username)
     {
         $userELoq = FrontendUser::nameGetUser($username);
-        $userIds = [];
         if ($userELoq !== null) {
-            $subUsers = FrontendUser::getSubIds($userELoq->id);
-            if ($subUsers->isNotEmpty()) {
-                $userIds = $subUsers->toArray();
-            }
+            $userIds = FrontendUser::getSubIds($userELoq->id);
+        } else {
+            $userIds = [];
         }
         return $userIds;
     }
