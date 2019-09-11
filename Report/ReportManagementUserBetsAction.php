@@ -17,7 +17,7 @@ class ReportManagementUserBetsAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
-        if ((int) $inputDatas['get_sub'] === 1) {// 搜索下级
+        if ((int) $inputDatas['get_sub'] === 1 && isset($inputDatas['username'])) {// 搜索下级
             $userIds = $this->getUserIds($inputDatas['username']);
 
             $contll->inputs['extra_where']['method'] = 'whereIn';

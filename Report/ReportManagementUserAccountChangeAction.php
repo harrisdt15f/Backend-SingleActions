@@ -55,7 +55,7 @@ class ReportManagementUserAccountChangeAction
 
     private function specialSearch($contll, $inputDatas)
     {
-        if ((int) $inputDatas['get_sub'] === 1) {// 搜索下级
+        if ((int) $inputDatas['get_sub'] === 1 && isset($inputDatas['username'])) {// 搜索下级
             $userIds = $this->getUserIds($inputDatas['username']);
             $contll->inputs['where_in']['key'] = 'user_id';
             $contll->inputs['where_in']['value'] = $userIds;
