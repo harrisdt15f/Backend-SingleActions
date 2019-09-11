@@ -35,7 +35,9 @@ class ReportManagementUserBetsAction
             'is_tester',
             'issue',
             'mode',
-            'status'
+            'status',
+            'times',
+            'ip'
         ];
         $field = 'id';
         $type = 'desc';

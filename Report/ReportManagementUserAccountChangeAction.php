@@ -5,24 +5,43 @@ namespace App\Http\SingleActions\Backend\Report;
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersAccountsReport;
 use Illuminate\Http\JsonResponse;
+use App\Models\User\FrontendUser;
 
 class ReportManagementUserAccountChangeAction
 {
     /**
      * 玩家帐变报表
      * @param   BackEndApiMainController  $contll
+     * @param   array $inputDatas
      * @return  JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
+        $this->specialSearch($contll, $inputDatas);
+
         $accountChangeEloq = new FrontendUsersAccountsReport();
-        $searchAbleFields = ['username', 'type_sign', 'is_for_agent'];
-        $fixedJoin = 1;
-        $withTable = 'changeType';
-        $withSearchAbleFields = ['in_out', 'type'];
+        $searchAbleFields = [
+            'serial_number',
+            'username',
+            'type_sign',
+            'is_tester',
+            'parent_id',
+            'in_out',
+            'from_admin_id',
+            'lottery_id'
+        ];
+        $fixedJoin = 2;
+        $withTable = [
+            'project:id,series_id,lottery_sign,method_name,mode,times,ip',
+            'admin:id,name'
+        ];
+        $withSearchAbleFields = [
+            ['mode', 'ip'],
+            []
+        ];
         $field = 'created_at';
         $type = 'desc';
-        $datas = $contll->generateSearchQuery(
+        $usersAccountsReport = $contll->generateSearchQuery(
             $accountChangeEloq,
             $searchAbleFields,
             $fixedJoin,
@@ -31,20 +50,36 @@ class ReportManagementUserAccountChangeAction
             $field,
             $type
         );
-        foreach ($datas as $key => $report) {
-            $data = $report->toArray();
-            $reportArr = [
-                'username' => $data['username'],
-                'balance' => $data['balance'],
-                'amount' => $data['amount'],
-                'before_balance' => $data['before_balance'],
-                'type_name' => $data['type_name'],
-                'type_sign' => $data['type_sign'],
-                'in_out' => $data['change_type']['in_out'],
-                'created_at' => $data['created_at'],
-            ];
-            $datas[$key] = $reportArr;
+        return $contll->msgOut(true, $usersAccountsReport);
+    }
+
+    private function specialSearch($contll, $inputDatas)
+    {
+        if ((int) $inputDatas['get_sub'] === 1) {// 搜索下级
+            $userIds = $this->getUserIds($inputDatas['username']);
+            $contll->inputs['where_in']['key'] = 'user_id';
+            $contll->inputs['where_in']['value'] = $userIds;
+            unset($contll->inputs['username']);
         }
-        return $contll->msgOut(true, $datas);
+
+        if (isset($inputDatas['min_price']) && isset($inputDatas['max_price'])) {
+            $contll->inputs['extra_where']['method'] = 'whereBetween';
+            $contll->inputs['extra_where']['key'] = 'amount';
+            $contll->inputs['extra_where']['value'] = [
+                $contll->inputs['min_price'],
+                $contll->inputs['max_price']
+            ];
+        }
+    }
+
+    public function getUserIds($username)
+    {
+        $userELoq = FrontendUser::nameGetUser($username);
+        if ($userELoq !== null) {
+            $userIds = FrontendUser::getSubIds($userELoq->id);
+        } else {
+            $userIds = [];
+        }
+        return $userIds;
     }
 }
