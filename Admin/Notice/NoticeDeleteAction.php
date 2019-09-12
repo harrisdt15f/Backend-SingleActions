@@ -4,7 +4,6 @@ namespace App\Http\SingleActions\Backend\Admin\Notice;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Common\ImageArrange;
-use App\Models\Admin\Notice\FrontendMessageNotice;
 use App\Models\Admin\Notice\FrontendMessageNoticesContent;
 use Exception;
 use Illuminate\Http\JsonResponse;
@@ -36,7 +35,7 @@ class NoticeDeleteAction
             $picStr = $noticesContentEloq->pic_path;
 
             //删除公告时，处理sort
-            if ($noticesContentEloq->type ===$this->model::TYPE_NOTICE) {
+            if ($noticesContentEloq->type === $this->model::TYPE_NOTICE && is_int($noticesContentEloq->sort)) {
                 $this->model::where('sort', '>', $noticesContentEloq->sort)->decrement('sort');
             }
 
