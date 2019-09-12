@@ -4,7 +4,6 @@ namespace App\Http\SingleActions\Backend\Users\Fund;
 
 use App\Http\Controllers\BackendApi\Users\Fund\RechargeCheckController;
 use App\Models\User\Fund\BackendAdminRechargehumanLog;
-use App\Models\User\UsersRechargeHistorie;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -73,7 +72,7 @@ class RechargeCheckAuditSuccessAction
         if ($historyEloq === null) {
             return ['success' => false, 'code' => '100904', 'messages' => ''];
         }
-        $historyEdit = ['status' => $historyEloq::AUDITSUCCESS];
+        $historyEdit = ['status' => $historyEloq::STATUS_AUDIT_SUCCESS];
         $historyEloq->fill($historyEdit);
         $historyEloq->save();
         if ($historyEloq->errors()->messages()) {
