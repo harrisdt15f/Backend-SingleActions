@@ -79,7 +79,7 @@ class RechargeCheckAuditFailureAction
         $rechargeLog->save();
 
         // 修改 users_recharge_histories 表 的审核状态
-        $historyEdit = ['status' => $historyEloq::AUDITFAILURE];
+        $historyEdit = ['status' => $historyEloq::STATUS_AUDIT_FAILURE];
         $historyEloq->fill($historyEdit);
         $historyEloq->save();
 

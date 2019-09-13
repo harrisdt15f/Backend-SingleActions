@@ -6,7 +6,6 @@ use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Lib\Configure;
 use App\Models\Admin\SystemConfiguration;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
 
 class ConfiguresAddAction
 {
@@ -36,10 +35,10 @@ class ConfiguresAddAction
         $configure = new $this->model();
         $configure->fill($addDatas);
         $configure->save();
-        if ($configure->error()->messages()) {
-            return $contll->msgOut(false, [], '', $configure->error()->messages());
+        if ($configure->errors()->messages()) {
+            return $contll->msgOut(false, [], '', $configure->errors()->messages());
         }
-        configure::set($configure->sign, $configure->value); //更新配置缓存
+        Configure::set($configure->sign, $configure->value); //更新配置缓存
         return $contll->msgOut(true);
     }
 }

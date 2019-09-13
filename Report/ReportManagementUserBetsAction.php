@@ -39,9 +39,12 @@ class ReportManagementUserBetsAction
             'times',
             'ip'
         ];
+        $fixedJoin = 1;
+        $withTable = 'lottery:cn_name,en_name';
+        $withSearchAbleFields = [];
         $field = 'id';
         $type = 'desc';
-        $datas = $contll->generateSearchQuery($projectEloq, $searchAbleFields, 0, null, [], $field, $type);
+        $datas = $contll->generateSearchQuery($projectEloq, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields, $field, $type);
         return $contll->msgOut(true, $datas);
     }
 

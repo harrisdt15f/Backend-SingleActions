@@ -3,7 +3,6 @@
 namespace App\Http\SingleActions\Backend\Users\Fund;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
-use App\Lib\Common\AccountChange;
 use App\Lib\Common\FundOperation;
 use App\Lib\Common\InternalNoticeMessage;
 use App\Models\Admin\BackendAdminAccessGroup;
@@ -14,12 +13,8 @@ use App\Models\BackendAdminAuditFlowList;
 use App\Models\DeveloperUsage\Menu\BackendSystemMenu;
 use App\Models\User\FrontendUser;
 use App\Models\User\Fund\BackendAdminRechargehumanLog;
-use App\Models\User\Fund\FrontendUsersAccount;
-use App\Models\User\Fund\FrontendUsersAccountsReport;
-use App\Models\User\Fund\FrontendUsersAccountsType;
 use App\Models\User\UsersRechargeHistorie;
 use App\Models\User\UsersRechargeLog;
-use Exception;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -87,7 +82,7 @@ class ArtificialRechargeRechargeAction
     public function compileRecharge($partnerAdmin, $userEloq, $amount, $auditFlowID, $newFund, $role, $uuid)
     {
         //用户 users_recharge_histories 表
-        $deposit_mode = UsersRechargeHistorie::ARTIFICIAL;
+        $deposit_mode = UsersRechargeHistorie::MODE_ARTIFICIAL;
         $rechargeHistory = $this->insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role);
         if ($rechargeHistory === false) {
             return ['success' => false];
@@ -189,7 +184,7 @@ class ArtificialRechargeRechargeAction
     public function insertRechargeHistory($userEloq, $auditFlowID, $deposit_mode, $amount, $role)
     {
         $userRechargeHistory = new UsersRechargeHistorie();
-        $status = $role !== '*' ? UsersRechargeHistorie::UNDERWAYAUDIT : UsersRechargeHistorie::AUDITSUCCESS;
+        $status = $role !== '*' ? UsersRechargeHistorie::STATUS_AUDIT_WAIT : UsersRechargeHistorie::STATUS_AUDIT_SUCCESS;
         $rechargeHistoryArr = $this->insertRechargeHistoryArr($userEloq->id, $userEloq->username, $userEloq->is_tester, $userEloq->top_id, $amount, $auditFlowID, $status, $deposit_mode);
         $userRechargeHistory->fill($rechargeHistoryArr);
         $userRechargeHistory->save();
