@@ -26,6 +26,8 @@ class HomepageBannerDetailAction
      */
     public function execute(BackEndApiMainController $contll, array $inputDatas): JsonResponse
     {
+        $currentTime = date('Y-m-d H:i:s',time());
+        $this->model::where('end_time','<',$currentTime)->update(['status' => 0]);
         $data = $this->model::where('flag', $inputDatas['flag'])->orderBy('sort', 'asc')->get()->toArray();
         return $contll->msgOut(true, $data);
     }

@@ -4,6 +4,7 @@ namespace App\Http\SingleActions\Backend\Users;
 
 use App\Http\Controllers\BackendApi\BackEndApiMainController;
 use App\Models\User\Fund\FrontendUsersBankCard;
+use App\Models\User\UsersRegion;
 use Illuminate\Http\JsonResponse;
 
 class UserHandleBankCardListAction
@@ -22,10 +23,13 @@ class UserHandleBankCardListAction
      * @param  BackEndApiMainController  $contll
      * @return JsonResponse
      */
-    public function execute(BackEndApiMainController $contll): JsonResponse
+    public function execute(BackEndApiMainController $contll, $inputData): JsonResponse
     {
         $searchAbleFields = ['bank_name', 'branch', 'username', 'owner_name', 'card_number', 'bank_sign', 'status'];
-        $data = $contll->generateSearchQuery($this->model, $searchAbleFields);
+        $fixedJoin = 1;
+        $withTable = ['province', 'city'];
+        $withSearchAbleFields = [];
+        $data = $contll->generateSearchQuery($this->model, $searchAbleFields, $fixedJoin, $withTable, $withSearchAbleFields);
         return $contll->msgOut(true, $data);
     }
 }
