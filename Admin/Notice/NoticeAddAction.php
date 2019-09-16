@@ -36,24 +36,33 @@ class NoticeAddAction
         $noticesContentData['operate_admin_id'] = $contll->partnerAdmin->id;
         $noticesContentData['operate_admin_name'] = $contll->partnerAdmin->name;
         unset($noticesContentData['pic_name']);
-        //发布公告需要获取sort
-        if ((int) $inputDatas['type'] === $this->model::TYPE_NOTICE) {
-            $maxSort = $this->model::select('sort')->max('sort');
-            $noticesContentData['sort'] = ++$maxSort;
-        }
+
         DB::beginTransaction();
         $noticesContentELoq = $this->model;
-        $noticesContentELoq->fill($noticesContentData);
-        $noticesContentELoq->save();
-        if ($noticesContentELoq->errors()->messages()) {
-            DB::rollback();
-            return $contll->msgOut(false, [], '', $noticesContentELoq->errors()->messages());
-        }
-        //发布站内信需要添加关联用户的frontend_message_notices表
-        if ((int) $inputDatas['type'] === $this->model::TYPE_MESSAGE) {
-            $insertUserNotice = $this->insertUserNotice($noticesContentELoq->id);
-            if ($insertUserNotice !== true) {
-                return $contll->msgOut(false, [], '', $insertUserNotice);
+        if ((int) $inputDatas['type'] === $this->model::TYPE_NOTICE) {
+            //新添加的公告默认靠最前   sort=1 之前的公告sort自增1
+            $this->model::where('sort', '>=', 1)->increment('sort');
+            $noticesContentData['sort'] = 1;
+            $noticesContentELoq->fill($noticesContentData);
+            $noticesContentELoq->save();
+            if ($noticesContentELoq->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '', $noticesContentELoq->errors()->messages());
+            }
+        } elseif ((int) $inputDatas['type'] === $this->model::TYPE_MESSAGE) {
+            $noticesContentELoq->fill($noticesContentData);
+            $noticesContentELoq->save();
+            if ($noticesContentELoq->errors()->messages()) {
+                DB::rollback();
+                return $contll->msgOut(false, [], '', $noticesContentELoq->errors()->messages());
+            }
+            //发布站内信需要添加关联用户的frontend_message_notices表
+            if ((int) $inputDatas['type'] === $this->model::TYPE_MESSAGE) {
+                $insertUserNotice = $this->insertUserNotice($noticesContentELoq->id);
+                if ($insertUserNotice !== true) {
+                    DB::rollback();
+                    return $contll->msgOut(false, [], '', $insertUserNotice);
+                }
             }
         }
         DB::commit();
@@ -80,7 +89,6 @@ class NoticeAddAction
             $messageNoticeEloq->fill($messageNoticeData);
             $messageNoticeEloq->save();
             if ($messageNoticeEloq->errors()->messages()) {
-                DB::rollback();
                 return $messageNoticeEloq->errors()->messages();
             }
         }

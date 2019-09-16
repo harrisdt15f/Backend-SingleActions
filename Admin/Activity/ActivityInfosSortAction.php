@@ -34,18 +34,24 @@ class ActivityInfosSortAction
         DB::beginTransaction();
         try {
             //上拉排序
-            if ($inputDatas['sort_type'] == 1) {
+            if ((int) $inputDatas['sort_type'] === 1) {
                 $stationaryData = $this->model::find($inputDatas['front_id']);
                 $stationaryData->sort = $inputDatas['front_sort'];
-                $this->model::where('sort', '>=', $inputDatas['front_sort'])
-                    ->where('sort', '<', $inputDatas['rearways_sort'])
+                $this->model::where([
+                    ['type', $inputDatas['type']],
+                    ['sort', '>=', $inputDatas['front_sort']],
+                    ['sort', '<', $inputDatas['rearways_sort']]
+                ])
                     ->increment('sort');
                 //下拉排序
-            } elseif ($inputDatas['sort_type'] == 2) {
+            } elseif ((int) $inputDatas['sort_type'] === 2) {
                 $stationaryData = $this->model::find($inputDatas['rearways_id']);
                 $stationaryData->sort = $inputDatas['rearways_sort'];
-                $this->model::where('sort', '>', $inputDatas['front_sort'])
-                    ->where('sort', '<=', $inputDatas['rearways_sort'])
+                $this->model::where([
+                    ['type', $inputDatas['type']],
+                    ['sort', '>', $inputDatas['front_sort']],
+                    ['sort', '<=', $inputDatas['rearways_sort']]
+                ])
                     ->decrement('sort');
             } else {
                 return $contll->msgOut(false);
