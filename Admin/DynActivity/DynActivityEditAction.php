@@ -19,19 +19,19 @@ class DynActivityEditAction
 
     public function execute(DynActivityController $contll, array $inputDatas) :JsonResponse
     {
+        $previewPcPic = []; //保存pc端图片的变量
+        $previewWapPic = []; //保存wap端图片的变量
+        $imageObj = new ImageArrange();
         try {
             $pastDataEloq = $this->model::find($inputDatas['id']);
             $editDatas = $inputDatas;
             if (strtotime($inputDatas['start_time']) >= strtotime($inputDatas['end_time'])) {
                 return $contll->msgOut(false, [], '400', '开始时间必须小与结束时间');
             }
-            $imageObj = new ImageArrange();
             $pc_pic = $pastDataEloq->pc_pic;
             $wap_pic = $pastDataEloq->wap_pic;
             if (isset($inputDatas['pc_pic'])) {
-                $pcDepositPath = $imageObj->depositPath($contll->folderName.'/pc', $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-                unset($editDatas['pc_pic']);
-                $previewPcPic = $imageObj->uploadImg($inputDatas['pc_pic'], $pcDepositPath);
+                $previewPcPic = $this->savePic($imageObj,'pc',$contll,$inputDatas['pc_pic']);
                 if ($previewPcPic['success'] === false) {
                     return $contll->msgOut(false, [], '400', $previewPcPic['msg']);
                 }
@@ -40,9 +40,7 @@ class DynActivityEditAction
                 $editDatas['pc_pic'] = '';
             }
             if (isset($inputDatas['wap_pic'])) {
-                $wapDepositPath = $imageObj->depositPath($contll->folderName.'/wap', $contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
-                unset($editDatas['wap_pic']);
-                $previewWapPic = $imageObj->uploadImg($inputDatas['wap_pic'], $wapDepositPath);
+                $previewWapPic = $this->savePic($imageObj,'wap',$contll,$inputDatas['wap_pic']);
                 if ($previewWapPic['success'] === false) {
                     return $contll->msgOut(false, [], '400', $previewWapPic['msg']);
                 }
@@ -62,19 +60,16 @@ class DynActivityEditAction
             return $contll->msgOut(true);
         } catch (\Exception $e) {
             $this->deletePic($imageObj , $previewPcPic , $previewWapPic);
-            if (!env('APP_DEBUG')) {
-                Log::info($e->getMessage());
-                return $contll->msgOut(false,[],'400','系统异常');
-            }
-            return $contll->msgOut(false,[],'400',$e->getMessage());
+            Log::channel('dy-activity')->info($e->getMessage());
+            return $contll->msgOut(false,[],'400','系统异常');
         }
     }
 
     /**
      * 如果上传失败删除图片
-     * @param $imageObj
-     * @param $previewPcPic
-     * @param $previewWapPic
+     * @param mixed $imageObj
+     * @param array $previewPcPic
+     * @param array $previewWapPic
      */
     private function deletePic($imageObj, $previewPcPic, $previewWapPic)
     {
@@ -86,6 +81,7 @@ class DynActivityEditAction
         }
     }
 
+
     private function deletePicNoFinsh($imageObj, $pc_pic, $wap_pic)
     {
         if (isset($pc_pic) && !empty($pc_pic)) {
@@ -94,5 +90,20 @@ class DynActivityEditAction
         if (isset($wap_pic) && !empty($wap_pic)) {
             $imageObj->deletePic(substr($wap_pic, 1));
         }
+    }
+
+    /**
+     * 保存图片
+     * @param mixed $imageObj
+     * @param string $path
+     * @param mixed $contll
+     * @param mixed $picSource
+     * @return mixed
+     */
+    private function savePic($imageObj, $path, $contll, $picSource)
+    {
+        $picSavePath = $imageObj->depositPath($contll->folderName.'/'.$path,$contll->currentPlatformEloq->platform_id, $contll->currentPlatformEloq->platform_name);
+        $previewPic = $imageObj->uploadImg($picSource, $picSavePath);
+        return $previewPic;
     }
 }
