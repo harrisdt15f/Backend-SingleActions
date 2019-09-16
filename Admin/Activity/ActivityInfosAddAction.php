@@ -7,6 +7,7 @@ use App\Lib\BaseCache;
 use App\Lib\Common\ImageArrange;
 use App\Models\Admin\Activity\FrontendActivityContent;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 
 class ActivityInfosAddAction
 {
@@ -46,16 +47,20 @@ class ActivityInfosAddAction
         }
         $addDatas['preview_pic_path'] = '/' . $previewPic['path'];
         if (isset($inputDatas['pic'])) {
-            $pic = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
-            if ($pic['success'] === false) {
+            $image = $imageObj->uploadImg($inputDatas['pic'], $depositPath);
+            if ($image['success'] === false) {
                 $imageObj->deletePic($previewPic['path']); //此次上传失败   删除前面上传的图片
-                return $contll->msgOut(false, [], '400', $pic['msg']);
+                return $contll->msgOut(false, [], '400', $image['msg']);
             }
-            $addDatas['pic_path'] = '/' . $pic['path'];
+            $addDatas['pic_path'] = '/' . $image['path'];
         }
-        $maxSort = $this->model::select('sort')->max('sort');
-        $sort = ++$maxSort; //sort
-        $addDatas['sort'] = $sort;
+        DB::beginTransaction();
+        //新添加的活动默认靠最前   sort=1 之前的活动sort自增1
+        $this->model::where([
+            ['sort', '>=', 1],
+            ['type', $inputDatas['type']]
+        ])->increment('sort');
+        $addDatas['sort'] = 1;
         $addDatas['admin_id'] = $contll->partnerAdmin->id;
         $addDatas['admin_name'] = $contll->partnerAdmin->name;
         $addDatas['type'] = $inputDatas['type'];
@@ -63,8 +68,10 @@ class ActivityInfosAddAction
         $activityEloq->fill($addDatas);
         $activityEloq->save();
         if ($activityEloq->errors()->messages()) {
+            DB::rollback();
             return $contll->msgOut(false, [], '400', $activityEloq->errors()->messages());
         }
+        DB::commit();
         self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
         return $contll->msgOut(true);
     }

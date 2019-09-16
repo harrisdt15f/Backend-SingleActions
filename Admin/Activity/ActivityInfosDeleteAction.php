@@ -32,17 +32,25 @@ class ActivityInfosDeleteAction
      */
     public function execute(ActivityInfosController $contll, array $inputDatas): JsonResponse
     {
-        $pastDataEloq = $this->model::find($inputDatas['id']);
+        $activityEloq = $this->model::find($inputDatas['id']);
+        $type = $activityEloq->type;
+        $sort = $activityEloq->sort;
+        $picPath = $activityEloq->pic_path;
+        $previewPicPath = $activityEloq->preview_pic_path;
         DB::beginTransaction();
         try {
-            $this->model::where('id', $inputDatas['id'])->delete();
+            $activityEloq->delete();
             //排序
-            $this->model::where('sort', '>', $pastDataEloq->sort)->decrement('sort');
+            $this->model::where([
+                ['type', $type],
+                ['sort', '>', $sort]
+            ])
+                ->decrement('sort');
             DB::commit();
             //删除图片
             $imageObj = new ImageArrange();
-            $imageObj->deletePic(substr($pastDataEloq->pic_path, 1));
-            $imageObj->deletePic(substr($pastDataEloq->preview_pic_path, 1));
+            $imageObj->deletePic(substr($picPath, 1));
+            $imageObj->deletePic(substr($previewPicPath, 1));
             self::deleteTagsCache($contll->redisKey); //删除前台活动缓存
             return $contll->msgOut(true);
         } catch (Exception $e) {
